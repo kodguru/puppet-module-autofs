@@ -1,0 +1,11 @@
+# This file is being maintained by Puppet.
+# DO NOT EDIT
+
+/net -hosts
++auto.master
+
+<% if @maps -%>
+<% @maps.each_pair do |key, value| -%>
+/<%= value['mountpoint'] %> /etc/auto.<%= value['mountpoint'] %>
+<% end -%>
+<% end -%>

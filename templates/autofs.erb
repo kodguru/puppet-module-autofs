@@ -1,0 +1,52 @@
+# This file is being maintained by Puppet.
+# DO NOT EDIT
+#
+#
+# Define default options for autofs.
+#
+# MASTER_MAP_NAME - default map name for the master map.
+#
+MASTER_MAP_NAME="auto.master"
+#
+# TIMEOUT - set the default mount timeout (default 600).
+#
+TIMEOUT=<%= @timeout %>
+#
+# NEGATIVE_TIMEOUT - set the default negative timeout for
+#          failed mount attempts (default 60).
+#
+NEGATIVE_TIMEOUT=<%= @negative_timeout %>
+#
+# MOUNT_WAIT - time to wait for a response from mount(8).
+#          Setting this timeout can cause problems when
+#          mount would otherwise wait for a server that
+#          is temporarily unavailable, such as when it's
+#          restarting. The default setting (-1) of waiting
+#          for mount(8) usually results in a wait of around
+#          3 minutes.
+#
+MOUNT_WAIT=<%= @mount_wait %>
+#
+# UMOUNT_WAIT - time to wait for a response from umount(8).
+#
+UMOUNT_WAIT=<%= @umount_wait %>
+#
+# BROWSE_MODE - maps are browsable by default.
+#
+BROWSE_MODE="<%= @browse_mode %>"
+#
+# MOUNT_NFS_DEFAULT_PROTOCOL - specify the default protocol used by
+#              mount.nfs(8). Since we can't identify
+#              the default automatically we need to
+#              set it in our configuration.
+#
+MOUNT_NFS_DEFAULT_PROTOCOL=<%= @mount_nfs_default_protocol %>
+#
+# APPEND_OPTIONS - append to global options instead of replace.
+#
+APPEND_OPTIONS="<%= @append_options %>"
+#
+# LOGGING - set default log level "none", "verbose" or "debug"
+#
+LOGGING="<%= @logging %>"
+
