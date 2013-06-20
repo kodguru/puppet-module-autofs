@@ -3,6 +3,9 @@ require 'spec_helper'
 describe 'autofs' do
   describe 'mountmap' do
     context 'defines /home' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
       let :params do
         {
           :maps =>
@@ -38,6 +41,9 @@ describe 'autofs' do
       end
     end
     context 'defines two mountpoints' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
       let :params do
         {
           :maps =>

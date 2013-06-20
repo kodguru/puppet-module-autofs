@@ -3,6 +3,9 @@ require 'spec_helper'
 describe 'autofs' do
 
   describe 'package' do
+    let :facts do
+      { :osfamily => 'RedHat' }
+    end
     it 'should install autofs' do
       should contain_package('autofs').with_ensure('installed')
     end
@@ -15,6 +18,9 @@ describe 'autofs' do
 
   describe 'sysconfig' do
     context 'should provide correct default values' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
       it 'for timeout' do
         should contain_file('autofs_sysconfig').with_content(/^\s*TIMEOUT=600$/)
       end
@@ -41,6 +47,9 @@ describe 'autofs' do
       end
     end
     context 'should provide correct specified values' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
       let :params do
         {
           :browse_mode => 'YES',
@@ -77,6 +86,21 @@ describe 'autofs' do
       it 'for logging' do
         should contain_file('autofs_sysconfig').with_content(/^\s*LOGGING="debug"$/)
       end
+    end
+    context 'should manage sysconfig on RedHat' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+
+      it { should contain_file('autofs_sysconfig').with_path('/etc/sysconfig/autofs') }
+    end
+    context 'should manage default config on Debian/Ubuntu' do
+
+      let :facts do
+        { :osfamily => 'Debian' }
+      end
+
+      it { should contain_file('autofs_sysconfig').with_path('/etc/default/autofs') }
     end
   end
 
