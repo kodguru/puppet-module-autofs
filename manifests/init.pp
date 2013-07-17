@@ -45,7 +45,7 @@ class autofs (
     ensure    => running,
     name      => $autofs::params::service,
     enable    => true,
-    subscribe => File['autofs_conf'],
+    subscribe => File['autofs_sysconfig'],
   }
 
 }
