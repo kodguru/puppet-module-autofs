@@ -1,6 +1,7 @@
 define autofs::map (
   $mountpoint = undef,
   $mounts = [],
+  $file = undef,
 ) {
 
   if $mountpoint == undef {
@@ -15,13 +16,25 @@ define autofs::map (
 
   $mountmap = "/etc/auto.${mnt}"
 
-  file { "mountmap_${mnt}":
-    ensure  => file,
-    path    => $mountmap,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('autofs/mountmap.erb')
+  if $file == undef {
+    file { "mountmap_${mnt}":
+      ensure  => file,
+      path    => $mountmap,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template('autofs/mountmap.erb'),
+      notify  => Service['autofs'],
+    }
+  } else {
+    file { "mountmap_${mnt}":
+      ensure  => file,
+      path    => $mountmap,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      source  => $file,
+      notify  => Service['autofs'],
+    }
   }
-
 }
