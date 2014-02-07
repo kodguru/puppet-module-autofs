@@ -5,7 +5,7 @@
 +auto.master
 
 <% if @maps -%>
-<% @maps.each_pair do |key, value| -%>
-/<%= value['mountpoint'] %> /etc/auto.<%= value['mountpoint'] %>
+<% @maps.keys.sort.each do |key| -%>
+/<%= @maps[key]['mountpoint'] %> /etc/auto.<%= @maps[key]['mountpoint'] %>
 <% end -%>
 <% end -%>
