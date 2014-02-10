@@ -24,7 +24,6 @@ define autofs::map (
       group   => 'root',
       mode    => '0644',
       content => template('autofs/mountmap.erb'),
-      notify  => Service['autofs'],
     }
   } else {
     file { "mountmap_${mnt}":
@@ -34,7 +33,6 @@ define autofs::map (
       group   => 'root',
       mode    => '0644',
       source  => $file,
-      notify  => Service['autofs'],
     }
   }
 }
