@@ -2,6 +2,7 @@ define autofs::map (
   $mountpoint = undef,
   $mounts = [],
   $file = undef,
+  $options = undef,
 ) {
 
   if $mountpoint == undef {

@@ -56,7 +56,8 @@ describe 'autofs' do
             'data' =>
             {
               'mountpoint' => 'data',
-              'mounts'     => [ 'server:/data/a', 'server:/data/b', 'server:/data/c']
+              'mounts'     => [ 'server:/data/a', 'server:/data/b', 'server:/data/c'],
+              'options'    => '--vers=3',
             }
           }
         }
@@ -68,7 +69,10 @@ describe 'autofs' do
       end
       it 'auto.master should contain both files' do
         should contain_file('auto.master').with_content(/^\s*\/home \/etc\/auto.home$/)
-        should contain_file('auto.master').with_content(/^\s*\/data \/etc\/auto.data$/)
+        should contain_file('auto.master').with_content(/^\s*\/data \/etc\/auto.data/)
+      end
+      it 'auto.master should contain options for data mount' do
+        should contain_file('auto.master').with_content(/^\s*\/data \/etc\/auto.data --vers=3$/)
       end
 
       it 'the maps should contain the corresponding data' do
