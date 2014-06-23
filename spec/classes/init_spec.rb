@@ -102,6 +102,25 @@ describe 'autofs' do
 
       it { should contain_file('autofs_sysconfig').with_path('/etc/default/autofs') }
     end
+    context 'should allow for custom config location' do
+
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :autofs_package     => 'autofs-custom',
+          :autofs_sysconfig    => '/etc/custom/autofs',
+          :autofs_auto_master => '/etc/custom/auto.master',
+          :autofs_service     => 'autofs-custom',
+        }
+      end
+
+      it { should contain_file('autofs_sysconfig').with_path('/etc/custom/autofs') }
+      it { should contain_file('auto.master').with_path('/etc/custom/auto.master') }
+      it { should contain_package('autofs').with_name('autofs-custom') }
+      it { should contain_service('autofs').with_name('autofs-custom') }
+    end
   end
 
 end
