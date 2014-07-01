@@ -6,6 +6,11 @@
 
 <% if @maps -%>
 <% @maps.keys.sort.each do |key| -%>
-/<%= @maps[key]['mountpoint'] %> /etc/auto.<%= @maps[key]['mountpoint'] %><% if @maps[key]['options'] %> <%= @maps[key]['options'] %><% end %>
+<% if @maps[key]['mountpoint'] -%>
+/<%= @maps[key]['mountpoint'] %> /etc/auto.<%= key -%>
+<% else -%>
+/<%= key %> /etc/auto.<%= key -%>
+<% end -%>
+<% if @maps[key]['options'] %> <%= @maps[key]['options'] %><% end %>
 <% end -%>
 <% end -%>

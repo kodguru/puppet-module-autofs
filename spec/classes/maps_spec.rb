@@ -84,6 +84,56 @@ describe 'autofs' do
         should contain_file('mountmap_data').with_content(/^server:\/data\/c$/)
       end
     end
+    context 'define mountpoint with subpaths' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :maps =>
+          {
+            'ftp' =>
+            {
+              'mountpoint' => 'ftp/projects',
+              'mounts'     => [ 'server:/ftp/a', 'server:/ftp/b', 'server:/ftp/c' ]
+            },
+          }
+        }
+      end
+      it 'auto.master should contain file with correct path' do
+        should contain_file('auto.master').with_content(/^\s*\/ftp\/projects \/etc\/auto.ftp$/)
+      end
+      it 'should contain auto.ftp' do
+        should contain_file('mountmap_ftp').with_path('/etc/auto.ftp')
+      end
+      it 'the map should contain the corresponding data' do
+        should contain_file('mountmap_ftp').with_content(/^server:\/ftp\/a$/)
+        should contain_file('mountmap_ftp').with_content(/^server:\/ftp\/b$/)
+        should contain_file('mountmap_ftp').with_content(/^server:\/ftp\/c$/)
+      end
+    end
+    context 'without defining mountpoint' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :maps =>
+          {
+            'ftp' =>
+            {
+              'mounts'     => [ 'server:/ftp/a', 'server:/ftp/b', 'server:/ftp/c' ]
+            },
+          }
+        }
+      end
+      it 'auto.master should contain file with correct path' do
+        should contain_file('auto.master').with_content(/^\s*\/ftp \/etc\/auto.ftp$/)
+      end
+      it 'should contain auto.ftp' do
+        should contain_file('mountmap_ftp').with_path('/etc/auto.ftp')
+      end
+    end
   end
 end
 

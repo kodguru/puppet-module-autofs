@@ -5,16 +5,7 @@ define autofs::map (
   $options = undef,
 ) {
 
-  if $mountpoint == undef {
-    if $name == undef {
-      $mnt = $name
-    } else {
-      fail("A mountpoint has to be supplied.")
-    }
-  } else {
-    $mnt = $mountpoint
-  }
-
+  $mnt = $name
   $mountmap = "/etc/auto.${mnt}"
 
   if $file == undef {
