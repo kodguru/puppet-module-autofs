@@ -2,9 +2,6 @@
 # DO NOT EDIT
 
 /net -hosts
-<% if @use_nis_maps_real -%>
-+<%= @nis_master_name %>
-<% end -%>
 
 <% if @maps -%>
 <% @maps.keys.sort.each do |key| -%>
@@ -19,4 +16,8 @@
 <% end -%>
 <% if @maps[key]['options'] %> <%= @maps[key]['options'] %><% end %>
 <% end -%>
+<% end -%>
+
+<% if @use_nis_maps_real -%>
++<%= @nis_master_name %>
 <% end -%>
