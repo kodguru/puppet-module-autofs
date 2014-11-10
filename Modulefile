@@ -1,5 +1,5 @@
 name    'gusson/autofs'
-version '0.0.1'
+version '1.0.0'
 source 'git://github.com/gusson/puppet-module-autofs.git'
 author 'gusson'
 license 'Apache License, Version 2.0'
