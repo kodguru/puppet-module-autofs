@@ -1,8 +1,9 @@
 define autofs::map (
   $mountpoint = undef,
-  $mounts = [],
-  $file = undef,
-  $options = undef,
+  $maptype    = undef,
+  $mounts     = [],
+  $file       = undef,
+  $options    = undef,
 ) {
 
   $mnt = $name

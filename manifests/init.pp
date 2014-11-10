@@ -12,6 +12,8 @@ class autofs (
   $autofs_sysconfig           = 'DEFAULT',
   $autofs_service             = 'DEFAULT',
   $autofs_auto_master         = 'DEFAULT',
+  $use_nis_maps               = true,
+  $nis_master_name            = 'auto.master',
 ) {
 
   include autofs::params
@@ -36,6 +38,15 @@ class autofs (
   } else {
     $autofs_auto_master_real = $autofs_auto_master
   }
+
+  if type($use_nis_maps) == 'string' {
+    $use_nis_maps_real = str2bool($use_nis_maps)
+  } else {
+    $use_nis_maps_real = $use_nis_maps
+  }
+  validate_bool($use_nis_maps_real)
+
+  validate_string($nis_master_name)
 
   package { 'autofs':
     ensure => installed,

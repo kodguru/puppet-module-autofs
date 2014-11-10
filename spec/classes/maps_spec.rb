@@ -40,6 +40,96 @@ describe 'autofs' do
         should contain_file('mountmap_home').with_content(/^server:\/home\/c$/)
       end
     end
+    context 'defines /home as NIS map' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :maps =>
+          {
+            'auto.home' =>
+              {
+                'mountpoint' => 'home',
+                'maptype'     => 'yp'
+              }
+          }
+        }
+      end
+
+      it 'should contain auto.master definition' do
+        should contain_file('auto.master').with_content(/^\s*\/home yp auto.home$/)
+      end
+
+    end
+    context 'have a +auto.master as default' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :maps =>
+          {
+            'auto.home' =>
+              {
+                'mountpoint' => 'home',
+                'maptype'     => 'yp'
+              }
+          }
+        }
+      end
+
+      it 'should contain NIS auto.master' do
+        should contain_file('auto.master').with_content(/^\s*\+auto.master$/)
+      end
+
+    end
+    context 'have a custom NIS master' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :nis_master_name => 'auto.custommaster',
+          :maps =>
+          {
+            'auto.home' =>
+              {
+                'mountpoint' => 'home',
+                'maptype'     => 'yp'
+              }
+          }
+        }
+      end
+
+      it 'should contain NIS auto.master' do
+        should contain_file('auto.master').with_content(/^\s*\+auto.custommaster$/)
+      end
+
+    end
+    context 'have +auto.master disabled' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :use_nis_maps => 'false',
+          :maps =>
+          {
+            'auto.home' =>
+              {
+                'mountpoint' => 'home',
+                'maptype'     => 'yp'
+              }
+          }
+        }
+      end
+
+      it 'should contain auto.master definition' do
+        should_not contain_file('auto.master').with_content(/^\s*\+auto.master$/)
+      end
+
+    end
     context 'defines two mountpoints' do
       let :facts do
         { :osfamily => 'RedHat' }
