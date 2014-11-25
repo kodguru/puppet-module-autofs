@@ -224,6 +224,49 @@ describe 'autofs' do
         should contain_file('mountmap_ftp').with_path('/etc/auto.ftp')
       end
     end
+    context 'define home as unmanaged' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :maps =>
+          {
+            'home' =>
+            {
+              'mountpoint'      =>  'home',
+              'manage'          =>  false
+            },
+          }
+        }
+      end
+      it 'should contain auto.home with null option' do
+        should contain_file('auto.master').with_content(/^\s*\/home --null$/)
+      end
+    end
+    context 'should not load NIS maps' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :maps =>
+          {
+            'home' =>
+            {
+              'mountpoint'      =>  'home'
+            },
+          },
+          :use_nis_maps => false
+        }
+      end
+      it 'should contain auto.home' do
+        should contain_file('auto.master').with_content(/^\s*\/home \/etc\/auto.home$/)
+      end
+      it 'should not contain +auto.master' do
+        should_not contain_file('auto.master').with_content(/^\+auto.master$/)
+      end
+    end
   end
 end
 
