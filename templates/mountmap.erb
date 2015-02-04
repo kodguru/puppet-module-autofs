@@ -1,6 +1,12 @@
 # This file is being maintained by Puppet.
 # DO NOT EDIT
 
+<% if @mounts -%>
+<% if @mounts.is_a?(Array) -%>
 <% @mounts.each do |mount| -%>
 <%= mount %>
+<% end -%>
+<% else -%>
+<%= @mounts %>
+<% end -%>
 <% end -%>
