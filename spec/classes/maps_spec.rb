@@ -241,7 +241,7 @@ describe 'autofs' do
         }
       end
       it 'should contain auto.home with null option' do
-        should contain_file('auto.master').with_content(/^\s*\/home --null$/)
+        should contain_file('auto.master').with_content(/^\s*\/home -null$/)
       end
     end
     context 'should not load NIS maps' do
