@@ -1,3 +1,4 @@
+# Manage autofs maps
 define autofs::map (
   $mountpoint = undef,
   $maptype    = undef,

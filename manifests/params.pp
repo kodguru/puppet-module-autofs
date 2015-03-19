@@ -1,3 +1,4 @@
+# Default parameters for different osfamilies
 class autofs::params {
 
   case $::osfamily {

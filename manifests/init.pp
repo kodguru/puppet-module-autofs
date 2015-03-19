@@ -1,3 +1,4 @@
+# Puppet module to manage autofs
 class autofs (
   $browse_mode                = 'NO',
   $timeout                    = '600',
@@ -16,7 +17,7 @@ class autofs (
   $nis_master_name            = 'auto.master',
 ) {
 
-  include autofs::params
+  include ::autofs::params
 
   if $autofs_package == 'DEFAULT' {
     $autofs_package_real = $autofs::params::package
