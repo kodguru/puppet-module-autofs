@@ -40,7 +40,7 @@ class autofs (
     $autofs_auto_master_real = $autofs_auto_master
   }
 
-  if type($use_nis_maps) == 'string' {
+  if is_string($use_nis_maps) {
     $use_nis_maps_real = str2bool($use_nis_maps)
   } else {
     $use_nis_maps_real = $use_nis_maps
