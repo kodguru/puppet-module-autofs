@@ -19,6 +19,12 @@ class autofs::params {
       $sysconfig = '/etc/default/autofs'
       $auto_master = '/etc/auto.master'
     }
+    'Solaris': {
+      $package = 'SUNWatfsr'
+      $service = 'autofs'
+      $sysconfig = '/etc/default/autofs'
+      $auto_master = '/etc/auto_master'
+    }
     default: {
       fail("Operating system family ${::osfamily} is not supported")
     }

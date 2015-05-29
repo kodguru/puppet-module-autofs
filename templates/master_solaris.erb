@@ -1,0 +1,21 @@
+# This file is being maintained by Puppet.
+# DO NOT EDIT
+
+<% if @use_nis_maps_real -%>
++<%= @nis_master_name %>
+<% end -%>
+
+<% if @maps -%>
+<% @maps.keys.sort.each do |key| -%>
+<% if @maps[key]['mountpoint'] -%>
+<% if @maps[key]['maptype'] -%>
+/<%= @maps[key]['mountpoint'] -%> <%= key -%>
+<% else -%>
+/<%= @maps[key]['mountpoint'] %> /etc/auto.<%= key -%>
+<% end -%>
+<% else -%>
+/<%= key %> /etc/auto.<%= key -%>
+<% end -%>
+<% if @maps[key]['options'] %> <%= @maps[key]['options'] %><% end %>
+<% end -%>
+<% end -%>

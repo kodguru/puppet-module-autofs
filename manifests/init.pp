@@ -53,13 +53,21 @@ class autofs (
     name   => $autofs_package_real,
   }
 
+  if $::osfamily == 'Solaris' {
+    $autofs_sysconfig_template = 'autofs/autofs_solaris.erb'
+    $auto_master_template = 'autofs/master_solaris.erb'
+  } else {
+    $autofs_sysconfig_template = 'autofs/autofs.erb'
+    $auto_master_template = 'autofs/master.erb'
+  }
+
   file { 'autofs_sysconfig':
     ensure  => file,
     path    => $autofs_sysconfig_real,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('autofs/autofs.erb'),
+    content => template($autofs_sysconfig_template),
     require => Package['autofs'],
   }
 
@@ -69,7 +77,7 @@ class autofs (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('autofs/master.erb'),
+    content => template($auto_master_template),
     require => Package['autofs'],
   }
 
