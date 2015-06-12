@@ -9,6 +9,7 @@ class autofs (
   $append_options             = 'yes',
   $logging                    = 'none',
   $maps                       = undef,
+  $maps_hiera_merge           = false,
   $autofs_package             = 'DEFAULT',
   $autofs_sysconfig           = 'DEFAULT',
   $autofs_service             = 'DEFAULT',
@@ -49,6 +50,19 @@ class autofs (
 
   validate_string($nis_master_name)
 
+  if is_string($maps_hiera_merge) {
+    $maps_hiera_merge_real = str2bool($maps_hiera_merge)
+  } else {
+    $maps_hiera_merge_real = $maps_hiera_merge
+  }
+  validate_bool($maps_hiera_merge_real)
+
+  if $maps_hiera_merge_real == true {
+    $maps_real = hiera_hash('autofs::maps')
+  } else {
+    $maps_real = $maps
+  }
+
   package { 'autofs':
     ensure => installed,
     name   => $autofs_package_real,
@@ -74,8 +88,8 @@ class autofs (
     require => Package['autofs'],
   }
 
-  if $maps != undef {
-    create_resources('autofs::map', $maps)
+  if $maps_real != undef {
+    create_resources('autofs::map', $maps_real)
   }
 
   service { 'autofs':

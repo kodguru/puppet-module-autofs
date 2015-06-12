@@ -4,6 +4,12 @@ puppet-module-autofs
 Puppet module to manage autofs. Documentation TBD.
 
 
+maps_hiera_merge
+----------------
+Set this value to true if you want *maps* to be merged from different levels in
+hiera
+
+- *Default*: false
 
 use_nis_maps
 ------------
