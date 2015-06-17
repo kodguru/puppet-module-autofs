@@ -3,6 +3,7 @@ puppet-module-autofs
 
 Puppet module to manage autofs. Documentation TBD.
 
+[![Build Status](https://api.travis-ci.org/gusson/puppet-module-autofs.png)](https://travis-ci.org/gusson/puppet-module-autofs)
 
 maps_hiera_merge
 ----------------
