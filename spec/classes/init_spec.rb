@@ -123,4 +123,111 @@ describe 'autofs' do
     end
   end
 
+  describe 'master file with defaults' do
+    let :facts do
+      { :osfamily => 'RedHat' }
+    end
+
+    fixture = File.read(fixtures('master.default'))
+    it { should contain_file('auto.master').with_content(fixture) }
+  end
+
+  describe 'master file with one mount' do
+    let :facts do
+      { :osfamily => 'RedHat' }
+    end
+    let :params do
+      { :maps => {
+          'home' =>
+            { 'mountpoint' => 'home',
+              'mounts'     => [ 'server:/home/a' ]
+            }
+        }
+      }
+    end
+
+    context 'managed' do
+      fixture = File.read(fixtures('master.manage_home'))
+      it { should contain_file('auto.master').with_content(fixture) }
+    end
+
+    context 'managed and nis maps disabled' do
+      let :params do
+        { :use_nis_maps => false,
+          :maps => {
+            'home' =>
+              { 'mountpoint' => 'home',
+                'mounts'     => [ 'server:/home/a' ]
+              }
+          }
+        }
+      end
+
+      fixture = File.read(fixtures('master.manage_home_nonis'))
+      it { should contain_file('auto.master').with_content(fixture) }
+    end
+
+    context 'managed and options set' do
+      let :params do
+        { :maps => {
+            'home' =>
+              { 'mountpoint' => 'home',
+                'mounts'     => [ 'server:/home/a' ],
+                'options'    => 'ro'
+              }
+          }
+        }
+      end
+
+      fixture = File.read(fixtures('master.manage_home_options'))
+      it { should contain_file('auto.master').with_content(fixture) }
+    end
+
+  end
+
+  describe 'master file with two mounts' do
+    let :facts do
+      { :osfamily => 'RedHat' }
+    end
+    let :params do
+      { :maps => {
+          'home' =>
+            { 'mountpoint' => 'home',
+              'mounts'     => [ 'server:/home/a' ]
+            },
+          'data' =>
+            { 'mountpoint' => 'data',
+              'mounts'     => [ 'server:/data/a' ]
+            }
+        }
+      }
+    end
+
+    context 'managed' do
+      fixture = File.read(fixtures('master.manage_two'))
+      it { should contain_file('auto.master').with_content(fixture) }
+    end
+
+    context 'managed and options set on /home' do
+      let :params do
+        { :maps => {
+            'home' =>
+              { 'mountpoint' => 'home',
+                'mounts'     => [ 'server:/home/a' ],
+                'options'    => 'ro'
+              },
+            'data' =>
+              { 'mountpoint' => 'data',
+                'mounts'     => [ 'server:/data/a' ]
+              }
+          }
+        }
+      end
+
+      fixture = File.read(fixtures('master.manage_two_options'))
+      it { should contain_file('auto.master').with_content(fixture) }
+
+    end
+  end
+
 end

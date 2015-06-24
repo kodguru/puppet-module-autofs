@@ -1,7 +1,9 @@
+# Manage autofs maps
 define autofs::map (
   $mountpoint = undef,
   $maptype    = undef,
   $mounts     = [],
+  $manage     = true,
   $file       = undef,
   $options    = undef,
 ) {
@@ -20,12 +22,12 @@ define autofs::map (
     }
   } else {
     file { "mountmap_${mnt}":
-      ensure  => file,
-      path    => $mountmap,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      source  => $file,
+      ensure => file,
+      path   => $mountmap,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0644',
+      source => $file,
     }
   }
 }

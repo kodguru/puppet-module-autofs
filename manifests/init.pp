@@ -1,3 +1,4 @@
+# Puppet module to manage autofs
 class autofs (
   $browse_mode                = 'NO',
   $timeout                    = '600',
@@ -8,6 +9,7 @@ class autofs (
   $append_options             = 'yes',
   $logging                    = 'none',
   $maps                       = undef,
+  $maps_hiera_merge           = false,
   $autofs_package             = 'DEFAULT',
   $autofs_sysconfig           = 'DEFAULT',
   $autofs_service             = 'DEFAULT',
@@ -16,7 +18,7 @@ class autofs (
   $nis_master_name            = 'auto.master',
 ) {
 
-  include autofs::params
+  include ::autofs::params
 
   if $autofs_package == 'DEFAULT' {
     $autofs_package_real = $autofs::params::package
@@ -39,7 +41,7 @@ class autofs (
     $autofs_auto_master_real = $autofs_auto_master
   }
 
-  if type($use_nis_maps) == 'string' {
+  if is_string($use_nis_maps) {
     $use_nis_maps_real = str2bool($use_nis_maps)
   } else {
     $use_nis_maps_real = $use_nis_maps
@@ -47,6 +49,19 @@ class autofs (
   validate_bool($use_nis_maps_real)
 
   validate_string($nis_master_name)
+
+  if is_string($maps_hiera_merge) {
+    $maps_hiera_merge_real = str2bool($maps_hiera_merge)
+  } else {
+    $maps_hiera_merge_real = $maps_hiera_merge
+  }
+  validate_bool($maps_hiera_merge_real)
+
+  if $maps_hiera_merge_real == true {
+    $maps_real = hiera_hash('autofs::maps')
+  } else {
+    $maps_real = $maps
+  }
 
   package { 'autofs':
     ensure => installed,
@@ -73,8 +88,8 @@ class autofs (
     require => Package['autofs'],
   }
 
-  if $maps != undef {
-    create_resources('autofs::map', $maps)
+  if $maps_real != undef {
+    create_resources('autofs::map', $maps_real)
   }
 
   service { 'autofs':
