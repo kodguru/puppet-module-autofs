@@ -1,21 +1,23 @@
 # This file is being maintained by Puppet.
 # DO NOT EDIT
 
-<% if @use_nis_maps_real -%>
-+<%= @nis_master_name %>
-<% end -%>
+/net -hosts
 
-<% if @maps -%>
-<% @maps.keys.sort.each do |key| -%>
-<% if @maps[key]['mountpoint'] -%>
-<% if @maps[key]['maptype'] -%>
-/<%= @maps[key]['mountpoint'] -%> <%= key -%>
+<% if @maps_real -%>
+<% @maps_real.keys.sort.each do |key| -%>
+<% if @maps_real[key]['mountpoint'] -%>
+<% if @maps_real[key]['maptype'] -%>
+/<%= @maps_real[key]['mountpoint'] -%> <%= key -%>
 <% else -%>
-/<%= @maps[key]['mountpoint'] %> /etc/auto.<%= key -%>
+/<%= @maps_real[key]['mountpoint'] %> /etc/auto.<%= key -%>
 <% end -%>
 <% else -%>
 /<%= key %> /etc/auto.<%= key -%>
 <% end -%>
-<% if @maps[key]['options'] %> <%= @maps[key]['options'] %><% end %>
+<% if @maps_real[key]['options'] %> <%= @maps_real[key]['options'] %><% end %>
 <% end -%>
+<% end -%>
+
+<% if @use_nis_maps_real -%>
++<%= @nis_master_name %>
 <% end -%>
