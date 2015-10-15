@@ -9,10 +9,32 @@ describe 'autofs' do
     it 'should install autofs' do
       should contain_package('autofs').with_ensure('installed')
     end
+  end
+  describe 'service' do
+    let :facts do
+      { :osfamily => 'RedHat' }
+    end
     it 'should start service' do
       should contain_service('autofs').with_name('autofs')
       should contain_service('autofs').with_ensure('running')
       should contain_service('autofs').with_enable(true)
+    end
+    context 'with service attribues set' do
+      let :facts do
+        { :osfamily => 'RedHat' }
+      end
+      let :params do
+        {
+          :service_enable => false,
+          :service_ensure => 'stopped',
+        }
+      end
+      it 'service_ensure set to stopped' do
+        should contain_service('autofs').with_ensure('stopped')
+      end
+      it 'service_enable set to false' do
+        should contain_service('autofs').with_enable(false)
+      end
     end
   end
 

@@ -16,6 +16,8 @@ class autofs (
   $autofs_auto_master         = 'DEFAULT',
   $use_nis_maps               = true,
   $nis_master_name            = 'auto.master',
+  $service_ensure             = 'running',
+  $service_enable             = true,
 ) {
 
   include ::autofs::params
@@ -63,6 +65,15 @@ class autofs (
     $maps_real = $maps
   }
 
+  validate_re($service_ensure, '^running$|^stopped$', "service_ensure must be running or stopped, got ${service_ensure}")
+
+  if is_string($service_enable) {
+    $service_enable_real = str2bool($service_enable)
+  } else {
+    $service_enable_real = $service_enable
+  }
+  validate_bool($service_enable_real)
+
   package { 'autofs':
     ensure => installed,
     name   => $autofs_package_real,
@@ -101,9 +112,9 @@ class autofs (
   }
 
   service { 'autofs':
-    ensure    => running,
+    ensure    => $service_ensure,
     name      => $autofs_service_real,
-    enable    => true,
+    enable    => $service_enable_real,
     require   => Package['autofs'],
     subscribe => [ File['autofs_sysconfig'], File['auto.master'], ],
   }
