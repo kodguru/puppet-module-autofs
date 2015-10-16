@@ -18,25 +18,53 @@ class autofs (
   $nis_master_name            = 'auto.master',
 ) {
 
-  include ::autofs::params
+  case $::osfamily {
+    'RedHat': {
+      $autofs_package_default     = 'autofs'
+      $autofs_service_default     = 'autofs'
+      $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
+      $autofs_auto_master_default = '/etc/auto.master'
+    }
+    'Suse': {
+      $autofs_package_default     = 'autofs'
+      $autofs_service_default     = 'autofs'
+      $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
+      $autofs_auto_master_default = '/etc/auto.master'
+    }
+    'Debian': {
+      $autofs_package_default     = 'autofs'
+      $autofs_service_default     = 'autofs'
+      $autofs_sysconfig_default   = '/etc/default/autofs'
+      $autofs_auto_master_default = '/etc/auto.master'
+    }
+    'Solaris': {
+      $autofs_package_default     = 'SUNWatfsr'
+      $autofs_service_default     = 'autofs'
+      $autofs_sysconfig_default   = '/etc/default/autofs'
+      $autofs_auto_master_default = '/etc/auto_master'
+    }
+    default: {
+      fail("Operating system family ${::osfamily} is not supported")
+    }
+  }
 
   if $autofs_package == 'DEFAULT' {
-    $autofs_package_real = $autofs::params::package
+    $autofs_package_real = $autofs_package_default
   } else {
     $autofs_package_real = $autofs_package
   }
   if $autofs_service == 'DEFAULT' {
-    $autofs_service_real = $autofs::params::service
+    $autofs_service_real = $autofs_service_default
   } else {
     $autofs_service_real = $autofs_service
   }
   if $autofs_sysconfig == 'DEFAULT' {
-    $autofs_sysconfig_real = $autofs::params::sysconfig
+    $autofs_sysconfig_real = $autofs_sysconfig_default
   } else {
     $autofs_sysconfig_real = $autofs_sysconfig
   }
   if $autofs_auto_master == 'DEFAULT' {
-    $autofs_auto_master_real = $autofs::params::auto_master
+    $autofs_auto_master_real = $autofs_auto_master_default
   } else {
     $autofs_auto_master_real = $autofs_auto_master
   }
