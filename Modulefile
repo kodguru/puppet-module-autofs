@@ -7,4 +7,4 @@ summary 'module to manage autofs'
 description 'Provides the means to manage autofs on all systems.'
 project_page 'https://github.com/gusson/puppet-module-autofs'
 
-dependency 'puppetlabs/stdlib', '>= 3.2.x'
+dependency 'puppetlabs/stdlib', '>= 4.6.x'
