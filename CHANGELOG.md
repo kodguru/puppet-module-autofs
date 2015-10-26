@@ -1,3 +1,8 @@
+## 1.2.0
+
+- Added the parameters service_ensure and service_enable (PR#6)
+- Code restructure to remove params.pp (PR#8)
+- Preparations for Puppet v4 (PR#9)
 
 ## 1.1.0
 
