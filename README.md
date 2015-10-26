@@ -48,3 +48,15 @@ nis_master_name
 The name of the NIS map containing the auto.master data
 
 - *Default*: auto.master
+
+service_ensure
+--------------
+Value for the service ensure attribute
+
+- *Default*: 'running'
+
+service_enable
+--------------
+Value for the service enable attribute
+
+- *Default*: true
