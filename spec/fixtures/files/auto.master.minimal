@@ -3,7 +3,3 @@
 
 /net -hosts
 
-/data /etc/auto.data
-/home /etc/auto.home
-
-+auto.master
