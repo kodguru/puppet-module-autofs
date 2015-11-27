@@ -1,8 +1,0 @@
-# This file is being maintained by Puppet.
-# DO NOT EDIT
-
-/net -hosts
-
-/home /etc/auto.home
-
-+auto.master
