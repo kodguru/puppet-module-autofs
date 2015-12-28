@@ -1,4 +1,7 @@
-# Puppet module to manage autofs
+# == Class: autofs
+#
+# Manage autofs
+#
 class autofs (
   $browse_mode                = 'NO',
   $timeout                    = '600',
@@ -93,7 +96,8 @@ class autofs (
     $maps_real = $maps
   }
 
-  validate_re($service_ensure, '^running$|^stopped$', "service_ensure must be running or stopped, got ${service_ensure}")
+  validate_re($service_ensure,
+    '^running$|^stopped$', "service_ensure must be running or stopped, got ${service_ensure}")
 
   if is_string($service_enable) {
     $service_enable_real = str2bool($service_enable)
@@ -144,7 +148,9 @@ class autofs (
     name      => $autofs_service_real,
     enable    => $service_enable_real,
     require   => Package['autofs'],
-    subscribe => [ File['autofs_sysconfig'], File['auto.master'], ],
+    subscribe => [
+      File['autofs_sysconfig'],
+      File['auto.master'],
+    ],
   }
-
 }
