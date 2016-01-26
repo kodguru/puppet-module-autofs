@@ -15,6 +15,7 @@ class autofs (
   $autofs_service             = 'DEFAULT',
   $autofs_auto_master         = 'DEFAULT',
   $use_nis_maps               = true,
+  $use_dash_hosts_for_net     = true,
   $nis_master_name            = 'auto.master',
   $service_ensure             = 'running',
   $service_enable             = true,
@@ -77,6 +78,13 @@ class autofs (
     $use_nis_maps_real = $use_nis_maps
   }
   validate_bool($use_nis_maps_real)
+
+  if is_string($use_dash_hosts_for_net) {
+    $use_dash_hosts_for_net_real = str2bool($use_dash_hosts_for_net)
+  } else {
+    $use_dash_hosts_for_net_real = $use_dash_hosts_for_net
+  }
+  validate_bool($use_dash_hosts_for_net_real)
 
   validate_string($nis_master_name)
 
