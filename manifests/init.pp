@@ -99,7 +99,7 @@ class autofs (
   validate_bool($maps_hiera_merge_real)
 
   if $maps_hiera_merge_real == true {
-    $maps_real = hiera_hash('autofs::maps')
+    $maps_real = hiera_hash('autofs::maps', undef)
   } else {
     $maps_real = $maps
   }
