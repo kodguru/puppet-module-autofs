@@ -139,6 +139,12 @@ Value for the service enable attribute
 
 - *Default*: true
 
+use_dash_hosts_for_net
+----------------------
+Set this to true makes autofs use "-hosts" for the /net mountpoint.  Set to false to use "/etc/auto.net"
+
+- *Default*: true
+
 # autofs::map parameters
 
 mountpoint
