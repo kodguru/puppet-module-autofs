@@ -221,6 +221,11 @@ describe 'autofs' do
       it { should contain_file('auto.master').without_content(/\+auto\.master/) }
     end
 
+    context 'with use_dash_hosts_for_net set to valid value <false>' do
+      let(:params) { { :use_dash_hosts_for_net => false } }
+      it { should contain_file('auto.master').with_content(/\/net \/etc\/auto.net --timeout=60/) }
+    end
+
     context 'with nis_master_name set to valid value <bike.meister>' do
       let(:params) { { :nis_master_name => 'bike.meister' } }
       it { should contain_file('auto.master').with_content(/\+bike\.meister/) }
@@ -234,6 +239,14 @@ describe 'autofs' do
     context 'with service_enable set to valid value <false>' do
       let(:params) { { :service_enable => 'false' } }
       it { should contain_service('autofs').with_enable('false') }
+    end
+  end
+
+  context 'on supported OS Solaris' do
+    let(:facts) { { :osfamily => 'Solaris' } }
+    context 'with use_dash_hosts_for_net set to valid value <false>' do
+      let(:params) { { :use_dash_hosts_for_net => false } }
+      it { should contain_file('auto.master').with_content(/\/net \/etc\/auto.net --timeout=60/) }
     end
   end
 
@@ -348,7 +361,7 @@ describe 'autofs' do
 #        :message => 'is not an absolute path',
 #      },
       'bool_stringified' => {
-        :name    => ['maps_hiera_merge','use_nis_maps','service_enable'],
+        :name    => ['maps_hiera_merge','use_nis_maps','use_dash_hosts_for_net','service_enable'],
         :valid   => [true,'true',false,'false'],
         :invalid => [nil,'invalid',3,2.42,['array'],a={'ha'=>'sh'}],
         :message => '(is not a boolean|Unknown type of boolean)',
