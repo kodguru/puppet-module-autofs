@@ -13,7 +13,7 @@
 <% if @maps_real[key]['maptype'] -%>
 /<%= @maps_real[key]['mountpoint'] -%> <%= key -%>
 <% else -%>
-/<%= @maps_real[key]['mountpoint'] %> /etc/auto.<%= key -%>
+/<%= @maps_real[key]['mountpoint'] %> <% if @maps_real[key]['manage'] == nil or @maps_real[key]['manage'] == true -%>/etc/auto.<%= key -%><% else -%>-null<% end -%>
 <% end -%>
 <% else -%>
 /<%= key %> /etc/auto.<%= key -%>
