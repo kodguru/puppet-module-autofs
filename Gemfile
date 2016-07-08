@@ -30,3 +30,7 @@ if RUBY_VERSION >= '1.8.7' and RUBY_VERSION < '1.9'
   # rake must be v10 for ruby 1.8.7
   gem 'rake', '~> 10.0'
 end
+
+if RUBY_VERSION < '2.0.0'
+  gem 'json', '~> 1.8.3'
+end
