@@ -10,7 +10,7 @@ gem 'metadata-json-lint'
 gem 'puppetlabs_spec_helper', '>= 0.1.0'
 gem 'facter', '>= 1.7.0'
 gem 'rspec-puppet'
-gem 'puppet-lint', :git => 'https://github.com/rodjek/puppet-lint.git'
+gem 'puppet-lint', '>= 1.0', '< 3.0' # change to '~> 2.0' once the plugins got updated
 gem 'puppet-lint-absolute_classname-check'
 gem 'puppet-lint-alias-check'
 gem 'puppet-lint-empty_string-check'
@@ -29,4 +29,8 @@ if RUBY_VERSION >= '1.8.7' and RUBY_VERSION < '1.9'
   gem 'rspec', '~> 2.0'
   # rake must be v10 for ruby 1.8.7
   gem 'rake', '~> 10.0'
+end
+
+if RUBY_VERSION < '2.0.0'
+  gem 'json', '~> 1.8.3'
 end
