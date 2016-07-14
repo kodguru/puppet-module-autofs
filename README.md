@@ -25,6 +25,7 @@ parser) and Puppet v4 on the following platforms and supports Ruby versions
 * SLES 11
 * SLES 12
 * Ubuntu 12.04 LTS
+* Ubuntu 14.04 LTS
 
 
 # Parameters
