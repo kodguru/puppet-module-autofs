@@ -2,7 +2,11 @@ require 'spec_helper'
 
 describe 'autofs' do
   let :facts do
-    { :osfamily => 'RedHat' }
+    {
+      :osfamily => 'RedHat',
+      :group    => 'foo',
+      :fqdn     => 'foo.example.com',
+    }
   end
 
   platforms = {
@@ -87,7 +91,10 @@ describe 'autofs' do
   platforms.sort.each do |osfamily,v|
     describe "with defaults for all parameters on supported OS #{osfamily}" do
       let :facts do
-        { :osfamily => osfamily }
+        {
+          :osfamily => osfamily,
+          :group    => 'foo',
+        }
       end
       content = File.read(fixtures(v[:autofs_sysconfig_fixture]))
 
@@ -243,7 +250,13 @@ describe 'autofs' do
   end
 
   context 'on supported OS Solaris' do
-    let(:facts) { { :osfamily => 'Solaris' } }
+    let(:facts) do
+      {
+        :osfamily => 'Solaris',
+        :group    => 'foo',
+      }
+    end
+
     context 'with use_dash_hosts_for_net set to valid value <false>' do
       let(:params) { { :use_dash_hosts_for_net => false } }
       it { should contain_file('auto.master').with_content(/\/net \/etc\/auto.net --timeout=60/) }
@@ -332,8 +345,12 @@ describe 'autofs' do
 
   describe 'running on unsupported OS' do
     let :facts do
-      { :osfamily => 'WierdOS' }
+      {
+        :osfamily => 'WierdOS',
+        :group    => 'foo',
+      }
     end
+
     it 'should fail' do
       expect {
         should contain_class(subject)
