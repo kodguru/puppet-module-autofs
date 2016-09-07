@@ -186,18 +186,18 @@ Specify extra mount points for this mountpoint
 
 # Examples
 
-Manage /home with mounts from a file on Puppet fileserver:
+Manage `/home` with mounts from a file on Puppet fileserver:
 
     autofs::maps:
       home:
         mountpoint: 'home'
         file: 'puppet:///files/autofs/auto.home'
 
-Result in auto.master:
+Results in `auto.master` with the following content.
 
     /home /etc/auto.home
 
-Manage /home with mounts defined hiera:
+Manage `/home` with mounts defined hiera:
 
     autofs::maps:
       home:
@@ -206,13 +206,13 @@ Manage /home with mounts defined hiera:
           - 'user1      nfsserver:/path/to/home/user1'
           - 'user2      nfsserver:/path/to/home/user2'
 
-Result in auto.home (auto.master remains as above):
+Results in `auto.home` with the following content and `auto.master` remaining as above.
 
     user1      nfsserver:/path/to/home/user1
     user2      nfsserver:/path/to/home/user2
 
 
-Prevent /home from being managed by at all (NIS included):
+Prevent `/home` from being managed by autofs (NIS included):
 
     autofs::maps:
       home:
