@@ -4,7 +4,10 @@ describe 'autofs' do
   describe 'mountmap' do
     context 'defines /home' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -42,7 +45,10 @@ describe 'autofs' do
     end
     context 'defines /home as NIS map' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -64,7 +70,10 @@ describe 'autofs' do
     end
     context 'have a +auto.master as default' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -86,7 +95,10 @@ describe 'autofs' do
     end
     context 'have a custom NIS master' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -109,7 +121,10 @@ describe 'autofs' do
     end
     context 'have +auto.master disabled' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -132,7 +147,10 @@ describe 'autofs' do
     end
     context 'defines two mountpoints' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -176,7 +194,10 @@ describe 'autofs' do
     end
     context 'define mountpoint with subpaths' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -204,7 +225,10 @@ describe 'autofs' do
     end
     context 'without defining mountpoint' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -226,7 +250,10 @@ describe 'autofs' do
     end
     context 'define home as unmanaged' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -246,7 +273,10 @@ describe 'autofs' do
     end
     context 'should not load NIS maps' do
       let :facts do
-        { :osfamily => 'RedHat' }
+        {
+          :osfamily => 'RedHat',
+          :group    => 'foo',
+        }
       end
       let :params do
         {
@@ -269,5 +299,3 @@ describe 'autofs' do
     end
   end
 end
-
-
