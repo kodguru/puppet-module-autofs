@@ -1,3 +1,8 @@
+## 1.4.0
+
+- Official Puppet v4 support
+- Meta changes
+
 ## 1.3.0
 
 - Added use_dash_hosts_for_net (PR#13)
