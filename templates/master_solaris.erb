@@ -1,7 +1,7 @@
 # This file is being maintained by Puppet.
 # DO NOT EDIT
 
-<%if @use_dash_net_for_hosts_real -%>
+<% if @use_dash_hosts_for_net_real -%>
 /net -hosts
 <% else -%>
 /net /etc/auto.net --timeout=60
