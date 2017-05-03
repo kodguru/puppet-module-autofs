@@ -149,7 +149,9 @@ Specify the mountpoint
 
 maptype
 -------
-Specify maptype for mountpoint
+Specify maptype for mountpoint  
+If maptype remains unset, the content will be written into a file /etc/auto.<key>.  
+If maptype is being set, no such file will be written.
 
 - *Default*: undef
 
