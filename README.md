@@ -155,13 +155,14 @@ Specify maptype for mountpoint
 
 mounts
 ------
-Specify the mounts to be mounted at mountpoint as an array
+Specify the mounts to be mounted at mountpoint as an array  
+This is the default, unless a file parameter is specified.
 
 - *Default*: []
 
 manage
 ------
-Specify whether mounts should be managed or not. Results in '-null' in auto.master
+Specify whether mounts should be managed or not. Results in '-null' in auto.master if changed to false
 
 - *Default*: true
 
