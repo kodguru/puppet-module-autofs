@@ -60,16 +60,22 @@ describe 'autofs::map' do
     ['mountpoint','maptype','manage','options'].each do |param|
       context "with #{param} set to <unneeded>" do
         let(:params) { { :"#{param}" => 'unneeded' } }
-        it {
-          should contain_file('mountmap_example').with({
-            'ensure'  => 'file',
-            'path'    => '/etc/auto.example',
-            'owner'   => 'root',
-            'group'   => 'root',
-            'mode'    => '0644',
-            'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n",
-          })
-        }
+
+
+        if param != 'maptype'
+          it {
+            should contain_file('mountmap_example').with({
+              'ensure'  => 'file',
+              'path'    => '/etc/auto.example',
+              'owner'   => 'root',
+              'group'   => 'root',
+              'mode'    => '0644',
+              'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n",
+            })
+          }
+        else
+          it { should_not contain_file('mountmap_example') }
+        end
       end
     end
   end
