@@ -1,3 +1,7 @@
+## 1.4.2
+
+- Support Puppet 6
+
 ## 1.4.1
 
 - Fix use_dash_hosts_for_net in Solaris (PR#22)
