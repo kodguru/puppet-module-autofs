@@ -67,6 +67,10 @@ describe 'autofs' do
         should contain_file('auto.master').with_content(/^\s*\/home yp auto.home$/)
       end
 
+      it 'should not contain a mapfile for home' do
+        should_not contain_file('/etc/auto.home')
+      end
+
     end
     context 'have a +auto.master as default' do
       let :facts do

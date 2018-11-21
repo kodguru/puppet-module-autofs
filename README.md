@@ -149,19 +149,22 @@ Specify the mountpoint
 
 maptype
 -------
-Specify maptype for mountpoint
+Specify maptype for mountpoint  
+If maptype remains unset, the content will be written into a file /etc/auto.<key>.  
+If maptype is being set, no such file will be written.
 
 - *Default*: undef
 
 mounts
 ------
-Specify the mounts to be mounted at mountpoint as an array
+Specify the mounts to be mounted at mountpoint as an array  
+This is the default, unless a file parameter is specified.
 
 - *Default*: []
 
 manage
 ------
-Specify whether mounts should be managed or not. Results in '-null' in auto.master
+Specify whether mounts should be managed or not. Results in '-null' in auto.master if changed to false
 
 - *Default*: true
 
