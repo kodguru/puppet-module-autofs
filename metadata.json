@@ -1,12 +1,12 @@
 {
-  "name": "gusson-autofs",
+  "name": "kodguru-autofs",
   "version": "1.4.1",
   "author": "gusson",
   "summary": "Manage autofs",
   "license": "Apache-2.0",
-  "source": "git://github.com/gusson/puppet-module-autofs.git",
-  "project_page": "https://github.com/gusson/puppet-module-autofs",
-  "issues_url": "https://github.com/gusson/puppet-module-autofs/issues",
+  "source": "git://github.com/kodguru/puppet-module-autofs.git",
+  "project_page": "https://github.com/kodguru/puppet-module-autofs",
+  "issues_url": "https://github.com/kodguru/puppet-module-autofs/issues",
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
