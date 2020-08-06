@@ -37,61 +37,50 @@ describe 'autofs' do
       },
   }
 
-  # full tests of all settings for a valid osfamily
-  context 'with defaults for all parameters on supported OS RedHat' do
-    it { is_expected.to compile.with_all_deps }
-    it { is_expected.to contain_class('autofs') }
-    it {
-      is_expected.to contain_package('autofs').with(
-        'ensure' => 'installed',
-        'name'   => 'autofs',
-      )
-    }
-    it {
-      is_expected.to contain_file('autofs_sysconfig').with(
-        'ensure'  => 'file',
-        'path'    => '/etc/sysconfig/autofs',
-        'owner'   => 'root',
-        'group'   => 'root',
-        'mode'    => '0644',
-        'require' => 'Package[autofs]',
-        'content' => File.read(fixtures('files/autofs.linux')),
-      )
-    }
-    it {
-      is_expected.to contain_file('auto.master').with(
-        'ensure'  => 'file',
-        'path'    => '/etc/auto.master',
-        'owner'   => 'root',
-        'group'   => 'root',
-        'mode'    => '0644',
-        'require' => 'Package[autofs]',
-        'content' => "#{File.read(fixtures('files/auto.master.minimal'))}\n+auto.master\n",
-      )
-    }
-    it {
-      is_expected.to contain_service('autofs').with(
-        'ensure'    => 'running',
-        'name'      => 'autofs',
-        'enable'    => 'true',
-        'require'   => 'Package[autofs]',
-        'subscribe' => ['File[autofs_sysconfig]', 'File[auto.master]'],
-      )
-    }
-  end
-
-  # tests of the minimum OS related divergences
   platforms.sort.each do |osfamily, v|
     describe "with defaults for all parameters on supported OS #{osfamily}" do
       let(:facts) { { osfamily: osfamily } }
 
-      content = File.read(fixtures(v[:autofs_sysconfig_fixture]))
+      it { is_expected.to compile.with_all_deps }
+      it { is_expected.to contain_class('autofs') }
 
-      it { is_expected.to contain_package('autofs').with_name(v[:autofs_package]) }
-      it { is_expected.to contain_file('autofs_sysconfig').with_path(v[:autofs_sysconfig]) }
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(content) }
-      it { is_expected.to contain_file('auto.master').with_path(v[:autofs_auto_master]) }
-      it { is_expected.to contain_service('autofs').with_name(v[:autofs_service]) }
+      it {
+        is_expected.to contain_package('autofs').with(
+          'ensure' => 'installed',
+          'name'   => v[:autofs_package],
+        )
+      }
+      it {
+        is_expected.to contain_file('autofs_sysconfig').with(
+          'ensure'  => 'file',
+          'path'    => v[:autofs_sysconfig],
+          'owner'   => 'root',
+          'group'   => 'root',
+          'mode'    => '0644',
+          'require' => 'Package[autofs]',
+          'content' => File.read(fixtures(v[:autofs_sysconfig_fixture])),
+        )
+      }
+      it {
+        is_expected.to contain_file('auto.master').with(
+          'ensure'  => 'file',
+          'path'    => v[:autofs_auto_master],
+          'owner'   => 'root',
+          'group'   => 'root',
+          'mode'    => '0644',
+          'require' => 'Package[autofs]',
+          'content' => "#{File.read(fixtures('files/auto.master.minimal'))}\n+auto.master\n",
+        )
+      }
+      it {
+        is_expected.to contain_service('autofs').with(
+          'ensure'    => 'running',
+          'name'      => v[:autofs_service],
+          'enable'    => 'true',
+          'require'   => 'Package[autofs]',
+          'subscribe' => ['File[autofs_sysconfig]', 'File[auto.master]'],
+        )
+      }
     end
   end
 
