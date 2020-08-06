@@ -1,13 +1,6 @@
 require 'spec_helper'
 
 describe 'autofs' do
-  let :facts do
-    {
-      osfamily: 'RedHat',
-      group:    'foo',
-      fqdn:     'foo.example.com',
-    }
-  end
 
   platforms = {
     'RedHat' =>
@@ -90,12 +83,7 @@ describe 'autofs' do
   # tests of the minimum OS related divergences
   platforms.sort.each do |osfamily, v|
     describe "with defaults for all parameters on supported OS #{osfamily}" do
-      let :facts do
-        {
-          osfamily: osfamily,
-          group: 'foo',
-        }
-      end
+      let(:facts) { { osfamily: osfamily } }
 
       content = File.read(fixtures(v[:autofs_sysconfig_fixture]))
 
@@ -171,7 +159,6 @@ describe 'autofs' do
     describe 'with maps_hiera_merge' do
       let :facts do
         {
-          osfamily: 'RedHat',
           fqdn:     'hieramerge.example.local',
           group:    'spectest',
         }
@@ -270,12 +257,7 @@ describe 'autofs' do
   end
 
   context 'on supported OS Solaris' do
-    let :facts do
-      {
-        osfamily: 'Solaris',
-        group:    'foo',
-      }
-    end
+    let(:facts) { { osfamily: 'Solaris' } }
 
     context 'with use_dash_hosts_for_net set to valid value <false>' do
       let(:params) { { use_dash_hosts_for_net: false } }
@@ -375,12 +357,7 @@ describe 'autofs' do
   end
 
   describe 'running on unsupported OS' do
-    let :facts do
-      {
-        osfamily: 'WierdOS',
-        group:    'foo',
-      }
-    end
+    let(:facts) { { osfamily: 'WierdOS' } }
 
     it 'fails' do
       expect {
@@ -393,7 +370,6 @@ describe 'autofs' do
     # set needed custom facts and variables
     let :facts do
       {
-        osfamily: 'RedHat',
         fqdn:     'hieramerge.example.local',
         group:    'spectest',
       }
