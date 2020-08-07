@@ -37,7 +37,6 @@ describe 'autofs' do
       },
   }
 
-  auto_master_minimal = File.read(fixtures('files/auto.master.minimal'))
   auto_master_header  = "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n"
 
   platforms.sort.each do |osfamily, v|
@@ -72,7 +71,7 @@ describe 'autofs' do
           'group'   => 'root',
           'mode'    => '0644',
           'require' => 'Package[autofs]',
-          'content' => "#{auto_master_minimal}\n+auto.master\n",
+          'content' => "#{auto_master_header}/net -hosts\n\n\n+auto.master\n",
         )
       }
       it {
@@ -271,7 +270,7 @@ describe 'autofs' do
     end
 
     context 'with one mount managed' do
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_minimal}/home /etc/auto.home\n\n+auto.master\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n/home /etc/auto.home\n\n+auto.master\n") }
     end
 
     context 'with one mount managed and nis maps disabled' do
@@ -287,7 +286,7 @@ describe 'autofs' do
         }
       end
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_minimal}/home /etc/auto.home\n\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n/home /etc/auto.home\n\n") }
     end
 
     context 'with one mount managed and options set' do
@@ -303,7 +302,7 @@ describe 'autofs' do
         }
       end
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_minimal}/home /etc/auto.home ro\n\n+auto.master\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n/home /etc/auto.home ro\n\n+auto.master\n") }
     end
 
     context 'with two mounts managed' do
@@ -322,7 +321,7 @@ describe 'autofs' do
         }
       end
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_minimal}/data /etc/auto.data\n/home /etc/auto.home\n\n+auto.master\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n/data /etc/auto.data\n/home /etc/auto.home\n\n+auto.master\n") }
     end
 
     context 'with two mounts managed and options set on /home' do
@@ -342,7 +341,7 @@ describe 'autofs' do
         }
       end
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_minimal}/data /etc/auto.data\n/home /etc/auto.home ro\n\n+auto.master\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n/data /etc/auto.data\n/home /etc/auto.home ro\n\n+auto.master\n") }
     end
   end
 
