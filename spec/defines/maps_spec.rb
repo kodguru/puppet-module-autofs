@@ -1,7 +1,6 @@
 require 'spec_helper'
 describe 'autofs::map' do
   let(:title) { 'example' }
-  let(:facts) { { osfamily: 'RedHat' } }
 
   context 'with default values for parameters on valid OS' do
     it { is_expected.to compile.with_all_deps }
@@ -76,11 +75,6 @@ describe 'autofs::map' do
   describe 'variable type and content validations' do
     # set needed custom facts and variables
     let(:title) { 'example' }
-    let(:facts) do
-      {
-        osfamily: 'RedHat',
-      }
-    end
     let(:validation_params) do
       {
         #      :param => 'value',
