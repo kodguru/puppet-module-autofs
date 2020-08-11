@@ -6,12 +6,14 @@ describe 'autofs::map' do
   context 'with default values for parameters on valid OS' do
     it { is_expected.to compile.with_all_deps }
     it {
-      is_expected.to contain_file('mountmap_example').with('ensure' => 'file',
-                                                           'path'    => '/etc/auto.example',
-                                                           'owner'   => 'root',
-                                                           'group'   => 'root',
-                                                           'mode'    => '0644',
-                                                           'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n")
+      is_expected.to contain_file('mountmap_example').with(
+        'ensure'  => 'file',
+        'path'    => '/etc/auto.example',
+        'owner'   => 'root',
+        'group'   => 'root',
+        'mode'    => '0644',
+        'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n",
+      )
     }
   end
 
@@ -37,12 +39,14 @@ describe 'autofs::map' do
       let(:params) { { file: 'puppet:///files/autofs/specific.map' } }
 
       it {
-        is_expected.to contain_file('mountmap_example').with('ensure' => 'file',
-                                                             'path'   => '/etc/auto.example',
-                                                             'owner'  => 'root',
-                                                             'group'  => 'root',
-                                                             'mode'   => '0644',
-                                                             'source' => 'puppet:///files/autofs/specific.map')
+        is_expected.to contain_file('mountmap_example').with(
+          'ensure' => 'file',
+          'path'   => '/etc/auto.example',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+          'source' => 'puppet:///files/autofs/specific.map',
+        )
       }
     end
   end
@@ -56,12 +60,14 @@ describe 'autofs::map' do
         let(:params) { { :"#{param}" => 'unneeded' } }
 
         it {
-          is_expected.to contain_file('mountmap_example').with('ensure' => 'file',
-                                                               'path'    => '/etc/auto.example',
-                                                               'owner'   => 'root',
-                                                               'group'   => 'root',
-                                                               'mode'    => '0644',
-                                                               'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n")
+          is_expected.to contain_file('mountmap_example').with(
+            'ensure' => 'file',
+            'path'    => '/etc/auto.example',
+            'owner'   => 'root',
+            'group'   => 'root',
+            'mode'    => '0644',
+            'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n",
+          )
         }
       end
     end
