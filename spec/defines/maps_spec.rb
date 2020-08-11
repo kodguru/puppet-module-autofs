@@ -2,7 +2,7 @@ require 'spec_helper'
 describe 'autofs::map' do
   let(:title) { 'example' }
 
-  context 'with default values for parameters on valid OS' do
+  context 'with defaults for all parameters' do
     it { is_expected.to compile.with_all_deps }
     it {
       is_expected.to contain_file('mountmap_example').with(
@@ -16,8 +16,8 @@ describe 'autofs::map' do
     }
   end
 
-  context 'with optional parameters set' do
-    context 'with mounts set to valid array <[\'spec srv:/path/spec\',\'test srv:/path/test\']>' do
+  context 'with functional parameters set' do
+    context 'with mounts set to valid array <[spec srv:/path/spec\, test srv:/path/test]>' do
       let(:params) { { mounts: ['spec srv:/path/spec', 'test srv:/path/test'] } }
 
       it {
@@ -50,10 +50,10 @@ describe 'autofs::map' do
     end
   end
 
-  context 'with ignoreable parameters set' do
-    # $autofs::maps is also used for auto.master template
-    # these parameters are not functional here
-    # they are needed to avoid "invalid parameter options" errors
+  context 'with non-functional parameters set' do
+    # $autofs::maps is also used for auto.master template.
+    # The following parameters are not used in autofs::map.
+    # But they need to exist to avoid "invalid parameter options" errors.
     ['mountpoint', 'maptype', 'manage', 'options'].each do |param|
       context "with #{param} set to <unneeded>" do
         let(:params) { { :"#{param}" => 'unneeded' } }
