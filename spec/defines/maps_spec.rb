@@ -1,5 +1,6 @@
 require 'spec_helper'
 describe 'autofs::map' do
+  mountmap_header = "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n"
   let(:title) { 'example' }
 
   context 'with defaults for all parameters' do
@@ -11,7 +12,7 @@ describe 'autofs::map' do
         'owner'   => 'root',
         'group'   => 'root',
         'mode'    => '0644',
-        'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n",
+        'content' => mountmap_header,
       )
     }
   end
@@ -21,7 +22,7 @@ describe 'autofs::map' do
       let(:params) { { mounts: ['spec srv:/path/spec', 'test srv:/path/test'] } }
 
       it {
-        is_expected.to contain_file('mountmap_example').with('content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\nspec srv:/path/spec\ntest srv:/path/test\n")
+        is_expected.to contain_file('mountmap_example').with('content' => "#{mountmap_header}spec srv:/path/spec\ntest srv:/path/test\n")
       }
     end
 
@@ -30,7 +31,7 @@ describe 'autofs::map' do
       let(:params) { { mounts: ['spectest server:/spec/test'] } }
 
       it {
-        is_expected.to contain_file('mountmap_example').with('content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\nspectest server:/spec/test\n")
+        is_expected.to contain_file('mountmap_example').with('content' => "#{mountmap_header}spectest server:/spec/test\n")
       }
     end
 
@@ -65,7 +66,7 @@ describe 'autofs::map' do
             'owner'   => 'root',
             'group'   => 'root',
             'mode'    => '0644',
-            'content' => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n",
+            'content' => mountmap_header,
           )
         }
       end
