@@ -454,17 +454,7 @@ describe 'autofs' do
 
   describe 'variable type and content validations' do
     # set needed custom facts and variables
-    let :facts do
-      {
-        fqdn:     'hieramerge.example.local',
-        group:    'spectest',
-      }
-    end
-    let :validation_params do
-      {
-        #      :param => 'value',
-      }
-    end
+    let(:facts) { { group: 'spectest' } }
 
     validations = {
       # use validate_absolute_path()
@@ -511,23 +501,27 @@ describe 'autofs' do
     }
 
     validations.sort.each do |type, var|
+      mandatory_params = {} if mandatory_params.nil?
       var[:name].each do |var_name|
+        var[:params] = {} if var[:params].nil?
+        var[:valid] = {} if var[:valid].nil?
+        var[:invalid] = {} if var[:invalid].nil?
+
         var[:valid].each do |valid|
-          context "with #{var_name} (#{type}) set to valid #{valid} (as #{valid.class})" do
-            let(:params) { validation_params.merge(:"#{var_name}" => valid) }
+          context "when #{var_name} (#{type}) is set to valid #{valid} (as #{valid.class})" do
+            let(:facts) { [mandatory_facts, var[:facts]].reduce(:merge) } unless var[:facts].nil?
+            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => valid }].reduce(:merge) }
 
             it { is_expected.to compile }
           end
         end
 
         var[:invalid].each do |invalid|
-          context "with #{var_name} (#{type}) set to invalid #{invalid} (as #{invalid.class})" do
-            let(:params) { validation_params.merge(:"#{var_name}" => invalid) }
+          context "when #{var_name} (#{type}) is set to invalid #{invalid} (as #{invalid.class})" do
+            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => invalid }].reduce(:merge) }
 
             it 'fails' do
-              expect {
-                is_expected.to contain_class(:subject)
-              }.to raise_error(Puppet::Error, %r{#{var[:message]}})
+              expect { is_expected.to contain_class(:subject) }.to raise_error(Puppet::Error, %r{#{var[:message]}})
             end
           end
         end
