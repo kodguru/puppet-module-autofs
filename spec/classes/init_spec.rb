@@ -149,8 +149,8 @@ describe 'autofs' do
     describe 'with maps_hiera_merge' do
       let :facts do
         {
-          fqdn:     'hieramerge.example.local',
-          group:    'spectest',
+          fqdn:     'data.from.hiera.fqdn',
+          group:    'data_from_hiera_group',
         }
       end
 
@@ -160,14 +160,14 @@ describe 'autofs' do
         it { is_expected.to have_autofs__map_resource_count(2) }
         it {
           is_expected.to contain_autofs__map('group').with(
-            'mountpoint' => 'group',
-            'mounts'     => ['group2 nfsserver:/fqdn/group2'],
+            'mountpoint' => 'from_hiera_fqdn',
+            'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
           )
         }
         it {
-          is_expected.to contain_autofs__map('home_from_fqdn').with(
+          is_expected.to contain_autofs__map('home_from_hiera_fqdn').with(
             'mountpoint' => 'home',
-            'mounts'     => ['user2  nfsserver:/fqdn/user2', 'user3  nfsserver:/fqdn/user3'],
+            'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
           )
         }
       end
@@ -177,21 +177,21 @@ describe 'autofs' do
 
         it { is_expected.to have_autofs__map_resource_count(3) }
         it {
-          is_expected.to contain_autofs__map('home_from_fqdn').with(
-            'mountpoint' => 'home',
-            'mounts'     => ['user2  nfsserver:/fqdn/user2', 'user3  nfsserver:/fqdn/user3'],
-          )
-        }
-        it {
-          is_expected.to contain_autofs__map('home_from_group').with(
-            'mountpoint' => 'home',
-            'mounts'     => ['user1  nfsserver:/group/user1'],
-          )
-        }
-        it {
           is_expected.to contain_autofs__map('group').with(
-            'mountpoint' => 'group',
-            'mounts'     => ['group2 nfsserver:/fqdn/group2'],
+            'mountpoint' => 'from_hiera_fqdn',
+            'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
+          )
+        }
+        it {
+          is_expected.to contain_autofs__map('home_from_hiera_fqdn').with(
+            'mountpoint' => 'home',
+            'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+          )
+        }
+        it {
+          is_expected.to contain_autofs__map('home_from_hiera_group').with(
+            'mountpoint' => 'home',
+            'mounts'     => ['home nfsserver:/home/from/hiera/group'],
           )
         }
       end
@@ -454,7 +454,7 @@ describe 'autofs' do
 
   describe 'variable type and content validations' do
     # set needed custom facts and variables
-    let(:facts) { { group: 'spectest' } }
+    let(:facts) { { group: 'data_from_hiera_group' } }
 
     validations = {
       # use validate_absolute_path()
