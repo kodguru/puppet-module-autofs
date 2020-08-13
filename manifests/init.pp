@@ -24,30 +24,40 @@ class autofs (
   $service_enable             = true,
 ) {
 
+  # system specific default values
   case $::osfamily {
     'RedHat': {
       $autofs_package_default     = 'autofs'
       $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
+      $autofs_sysconfig_template  = 'autofs/autofs.erb'
+      $auto_master_template       = 'autofs/master.erb'
     }
     'Suse': {
       $autofs_package_default     = 'autofs'
       $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
+      $autofs_sysconfig_template  = 'autofs/autofs.erb'
+      $auto_master_template       = 'autofs/master.erb'
     }
     'Debian': {
       $autofs_package_default     = 'autofs'
       $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/default/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
+      $autofs_sysconfig_template  = 'autofs/autofs.erb'
+      $auto_master_template       = 'autofs/master.erb'
     }
     'Solaris': {
       $autofs_package_default     = 'SUNWatfsr'
       $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/default/autofs'
       $autofs_auto_master_default = '/etc/auto_master'
+      $autofs_sysconfig_template  = 'autofs/autofs_solaris.erb'
+      $auto_master_template       = 'autofs/master_solaris.erb'
+
     }
     default: {
       fail("Operating system family ${::osfamily} is not supported")
@@ -117,14 +127,6 @@ class autofs (
   package { 'autofs':
     ensure => installed,
     name   => $autofs_package_real,
-  }
-
-  if $::osfamily == 'Solaris' {
-    $autofs_sysconfig_template = 'autofs/autofs_solaris.erb'
-    $auto_master_template = 'autofs/master_solaris.erb'
-  } else {
-    $autofs_sysconfig_template = 'autofs/autofs.erb'
-    $auto_master_template = 'autofs/master.erb'
   }
 
   file { 'autofs_sysconfig':
