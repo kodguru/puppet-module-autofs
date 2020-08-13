@@ -155,7 +155,7 @@ describe 'autofs' do
       end
 
       context 'set to valid value <false>' do
-        let(:params) { { maps_hiera_merge: 'false' } }
+        let(:params) { { maps_hiera_merge: false } }
 
         it { is_expected.to have_autofs__map_resource_count(2) }
         it {
@@ -173,7 +173,7 @@ describe 'autofs' do
       end
 
       context 'set to valid value <true>' do
-        let(:params) { { maps_hiera_merge: 'true' } }
+        let(:params) { { maps_hiera_merge: true } }
 
         it { is_expected.to have_autofs__map_resource_count(3) }
         it {
@@ -216,7 +216,7 @@ describe 'autofs' do
     end
 
     context 'with use_nis_maps set to valid value <false>' do
-      let(:params) { { use_nis_maps: 'false' } }
+      let(:params) { { use_nis_maps: false } }
 
       it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n\n") }
     end
@@ -240,7 +240,7 @@ describe 'autofs' do
     end
 
     context 'with service_enable set to valid value <false>' do
-      let(:params) { { service_enable: 'false' } }
+      let(:params) { { service_enable: false } }
 
       it { is_expected.to contain_service('autofs').with_enable('false') }
     end
@@ -463,11 +463,11 @@ describe 'autofs' do
         invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
         message: 'is not an absolute path', # source: stdlib:validate_absolute_path
       },
-      'bool_stringified' => {
+      'boolean / stringified boolean' => {
         name:    ['maps_hiera_merge', 'use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
         valid:   [true, 'true', false, 'false'],
-        invalid: [nil, 'invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }],
-        message: '(is not a boolean|Unknown type of boolean)',
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
+        message: '(is not a boolean|Unknown type of boolean)', # source: (autofs:fail|stdlib:str2bool)
       },
       # use validate_hash()
       #      'hash' => {

@@ -106,6 +106,30 @@ class autofs (
     default:   { fail('autofs::mount_nfs_default_protocol is not an integer.') }
   }
 
+  case type3x($use_nis_maps) {
+    'string':  { $use_nis_maps_bool = str2bool($use_nis_maps) }
+    'boolean': { $use_nis_maps_bool = $use_nis_maps }
+    default:   { fail('autofs::use_nis_maps is not a boolean.') }
+  }
+
+  case type3x($maps_hiera_merge) {
+    'string':  { $maps_hiera_merge_bool = str2bool($maps_hiera_merge) }
+    'boolean': { $maps_hiera_merge_bool = $maps_hiera_merge }
+    default:   { fail('autofs::maps_hiera_merge is not a boolean.') }
+  }
+
+  case type3x($use_dash_hosts_for_net) {
+    'string':  { $use_dash_hosts_for_net_bool = str2bool($use_dash_hosts_for_net) }
+    'boolean': { $use_dash_hosts_for_net_bool = $use_dash_hosts_for_net }
+    default:   { fail('autofs::use_dash_hosts_for_net is not a boolean.') }
+  }
+
+  case type3x($service_enable) {
+    'string':  { $service_enable_bool = str2bool($service_enable) }
+    'boolean': { $service_enable_bool = $service_enable }
+    default:   { fail('autofs::service_enable is not a boolean.') }
+  }
+
   # variable validations
   if is_string($autofs_package_real) == false { fail('autofs::autofs_package is not a string.') }
   if is_string($autofs_service)      == false { fail('autofs::autofs_service is not a string.') }
@@ -115,30 +139,9 @@ class autofs (
     $autofs_auto_master_real,
   )
 
-  if is_string($use_nis_maps) {
-    $use_nis_maps_real = str2bool($use_nis_maps)
-  } else {
-    $use_nis_maps_real = $use_nis_maps
-  }
-  validate_bool($use_nis_maps_real)
-
-  if is_string($use_dash_hosts_for_net) {
-    $use_dash_hosts_for_net_real = str2bool($use_dash_hosts_for_net)
-  } else {
-    $use_dash_hosts_for_net_real = $use_dash_hosts_for_net
-  }
-  validate_bool($use_dash_hosts_for_net_real)
-
   validate_string($nis_master_name)
 
-  if is_string($maps_hiera_merge) {
-    $maps_hiera_merge_real = str2bool($maps_hiera_merge)
-  } else {
-    $maps_hiera_merge_real = $maps_hiera_merge
-  }
-  validate_bool($maps_hiera_merge_real)
-
-  if $maps_hiera_merge_real == true {
+  if $maps_hiera_merge_bool == true {
     $maps_real = hiera_hash('autofs::maps', undef)
   } else {
     $maps_real = $maps
@@ -146,13 +149,6 @@ class autofs (
 
   validate_re($service_ensure,
     '^running$|^stopped$', "service_ensure must be running or stopped, got ${service_ensure}")
-
-  if is_string($service_enable) {
-    $service_enable_real = str2bool($service_enable)
-  } else {
-    $service_enable_real = $service_enable
-  }
-  validate_bool($service_enable_real)
 
   package { 'autofs':
     ensure => installed,
@@ -186,7 +182,7 @@ class autofs (
   service { 'autofs':
     ensure    => $service_ensure,
     name      => $autofs_service,
-    enable    => $service_enable_real,
+    enable    => $service_enable_bool,
     require   => Package['autofs'],
     subscribe => [
       File['autofs_sysconfig'],

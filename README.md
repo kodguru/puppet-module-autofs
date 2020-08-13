@@ -79,12 +79,11 @@ Specify the maps managed. This value is sent to define autofs::map
 
 - *Default*: undef
 
-maps_hiera_merge
-----------------
-Set this value to true if you want *maps* to be merged from different levels in
-hiera
+---
+#### maps_hiera_merge (type: Boolean)
+If the module should merge `$maps` from different levels in hiera.
 
-- *Default*: false
+- Default: **false**
 
 ---
 #### autofs_package (type: String)
@@ -111,12 +110,12 @@ Absolute path for autofs.master location. Unset, this parameter will choose the 
 - Default: **undef**
 
 ---
-use_nis_maps
-------------
-Set this to true make the module load mount maps from NIS
+#### use_nis_maps (type: Boolean)
+If the module should load mount maps from NIS.
 
-- *Default*: true
+- Default: **true**
 
+---
 nis_master_name
 ---------------
 The name of the NIS map containing the auto.master data
@@ -129,18 +128,19 @@ Value for the service ensure attribute
 
 - *Default*: 'running'
 
-service_enable
---------------
-Value for the service enable attribute
+---
+#### service_enable (type: Boolean)
+Value for the service enable attribute.
 
-- *Default*: true
+- Default: **true**
 
-use_dash_hosts_for_net
-----------------------
-Set this to true makes autofs use "-hosts" for the /net mountpoint.  Set to false to use "/etc/auto.net"
+---
+#### use_dash_hosts_for_net (type: Boolean)
+Set this to true makes autofs use `-hosts` for the /net mountpoint. Set to false to use `/etc/auto.net`.
 
-- *Default*: true
+- Default: **true**
 
+---
 # autofs::map parameters
 
 mountpoint

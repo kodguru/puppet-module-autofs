@@ -1,7 +1,7 @@
 # This file is being maintained by Puppet.
 # DO NOT EDIT
 
-<% if @use_dash_hosts_for_net_real -%>
+<% if @use_dash_hosts_for_net_bool -%>
 /net -hosts
 <% else -%>
 /net /etc/auto.net --timeout=60
@@ -22,6 +22,6 @@
 <% end -%>
 <% end -%>
 
-<% if @use_nis_maps_real -%>
+<% if @use_nis_maps_bool -%>
 +<%= @nis_master_name %>
 <% end -%>
