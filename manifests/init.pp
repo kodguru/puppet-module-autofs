@@ -15,7 +15,7 @@ class autofs (
   $maps_hiera_merge           = false,
   $autofs_package             = 'DEFAULT',
   $autofs_sysconfig           = 'DEFAULT',
-  $autofs_service             = 'DEFAULT',
+  $autofs_service             = 'autofs',
   $autofs_auto_master         = 'DEFAULT',
   $use_nis_maps               = true,
   $use_dash_hosts_for_net     = true,
@@ -28,7 +28,6 @@ class autofs (
   case $::osfamily {
     'RedHat': {
       $autofs_package_default     = 'autofs'
-      $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
       $autofs_sysconfig_template  = 'autofs/autofs.erb'
@@ -36,7 +35,6 @@ class autofs (
     }
     'Suse': {
       $autofs_package_default     = 'autofs'
-      $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
       $autofs_sysconfig_template  = 'autofs/autofs.erb'
@@ -44,7 +42,6 @@ class autofs (
     }
     'Debian': {
       $autofs_package_default     = 'autofs'
-      $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/default/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
       $autofs_sysconfig_template  = 'autofs/autofs.erb'
@@ -52,7 +49,6 @@ class autofs (
     }
     'Solaris': {
       $autofs_package_default     = 'SUNWatfsr'
-      $autofs_service_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/default/autofs'
       $autofs_auto_master_default = '/etc/auto_master'
       $autofs_sysconfig_template  = 'autofs/autofs_solaris.erb'
@@ -64,15 +60,11 @@ class autofs (
     }
   }
 
+  # variable preparations
   if $autofs_package == 'DEFAULT' {
     $autofs_package_real = $autofs_package_default
   } else {
     $autofs_package_real = $autofs_package
-  }
-  if $autofs_service == 'DEFAULT' {
-    $autofs_service_real = $autofs_service_default
-  } else {
-    $autofs_service_real = $autofs_service
   }
   if $autofs_sysconfig == 'DEFAULT' {
     $autofs_sysconfig_real = $autofs_sysconfig_default
@@ -84,6 +76,9 @@ class autofs (
   } else {
     $autofs_auto_master_real = $autofs_auto_master
   }
+
+  # variable validations
+  if is_string($autofs_service)      == false { fail('autofs::autofs_service is not a string.') }
 
   if is_string($use_nis_maps) {
     $use_nis_maps_real = str2bool($use_nis_maps)
@@ -155,7 +150,7 @@ class autofs (
 
   service { 'autofs':
     ensure    => $service_ensure,
-    name      => $autofs_service_real,
+    name      => $autofs_service,
     enable    => $service_enable_real,
     require   => Package['autofs'],
     subscribe => [

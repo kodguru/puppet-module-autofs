@@ -490,13 +490,12 @@ describe 'autofs' do
         invalid: ['invalid', 'true', 'false', ['array'], { 'ha' => 'sh' }, 3, 2.42, true, false, nil],
         message: '(must be running or stopped|input needs to be a String)',
       },
-      # add missing validate_string() for 'browse_mode','append_options','logging','autofs_package','autofs_service'
+      # add missing validate_string() for 'browse_mode','append_options','logging','autofs_package','nis_master_name'
       'string' => {
-        #        :name    => ['browse_mode','append_options','logging','autofs_package','autofs_service','nis_master_name'],
-        name:    ['nis_master_name'],
-        valid:   ['valid'],
-        invalid: [['array'], { 'ha' => 'sh' }],
-        message: 'is not a string',
+        name:    ['autofs_service'],
+        valid:   ['string'],
+        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'is not a string', # source: autofs:fail
       },
     }
 

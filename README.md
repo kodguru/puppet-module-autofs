@@ -97,12 +97,13 @@ Specify autofs sysconfig location
 
 - *Default*: 'DEFAULT'
 
-autofs_service
---------------
-Specify autofs service name
+---
+#### autofs_service (type: String)
+Service name for autofs to manage.
 
-- *Default*: 'DEFAULT'
+- *Default*: **'autofs'**
 
+---
 autofs_auto_master
 ------------------
 Specify autofs.master location
