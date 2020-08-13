@@ -457,13 +457,12 @@ describe 'autofs' do
     let(:facts) { { group: 'data_from_hiera_group' } }
 
     validations = {
-      # use validate_absolute_path()
-      #      'absolute_path' => {
-      #        :name    => ['autofs_sysconfig','autofs_auto_master'],
-      #        :valid   => ['/absolute/filepath','/absolute/directory/'],
-      #        :invalid => ['invalid',3,2.42,['array'],a={'ha'=>'sh'}],
-      #        :message => 'is not an absolute path',
-      #      },
+      'absolute_path' => {
+        name:    ['autofs_sysconfig','autofs_auto_master'],
+        valid:   ['/absolute/filepath', '/absolute/directory/'],
+        invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
+        message: 'is not an absolute path', # source: stdlib:validate_absolute_path
+      },
       'bool_stringified' => {
         name:    ['maps_hiera_merge', 'use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
         valid:   [true, 'true', false, 'false'],
@@ -492,7 +491,7 @@ describe 'autofs' do
       },
       # add missing validate_string() for 'browse_mode','append_options','logging','autofs_package','nis_master_name'
       'string' => {
-        name:    ['autofs_service'],
+        name:    ['autofs_package', 'autofs_service'],
         valid:   ['string'],
         invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
         message: 'is not a string', # source: autofs:fail

@@ -85,17 +85,17 @@ hiera
 
 - *Default*: false
 
-autofs_package
---------------
-Specify autofs package name
+---
+#### autofs_package (type: String)
+Package name for autofs. Unset, this parameter will choose the appropriate default for the system.
 
-- *Default*: 'DEFAULT'
+- Default: **undef**
 
-autofs_sysconfig
-----------------
-Specify autofs sysconfig location
+---
+#### autofs_sysconfig (type: String)
+Absolute path for autofs sysconfig location. Unset, this parameter will choose the appropriate default for the system.
 
-- *Default*: 'DEFAULT'
+- Default: **undef**
 
 ---
 #### autofs_service (type: String)
@@ -104,12 +104,12 @@ Service name for autofs to manage.
 - *Default*: **'autofs'**
 
 ---
-autofs_auto_master
-------------------
-Specify autofs.master location
+#### autofs_auto_master (type: String)
+Absolute path for autofs.master location. Unset, this parameter will choose the appropriate default for the system.
 
-- *Default*: 'DEFAULT'
+- Default: **undef**
 
+---
 use_nis_maps
 ------------
 Set this to true make the module load mount maps from NIS

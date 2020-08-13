@@ -1,4 +1,4 @@
-# == Class: autofs
+# == Class: autfs
 #
 # Manage autofs
 #
@@ -13,10 +13,10 @@ class autofs (
   $logging                    = 'none',
   $maps                       = undef,
   $maps_hiera_merge           = false,
-  $autofs_package             = 'DEFAULT',
-  $autofs_sysconfig           = 'DEFAULT',
+  $autofs_package             = undef,
+  $autofs_sysconfig           = undef,
   $autofs_service             = 'autofs',
-  $autofs_auto_master         = 'DEFAULT',
+  $autofs_auto_master         = undef,
   $use_nis_maps               = true,
   $use_dash_hosts_for_net     = true,
   $nis_master_name            = 'auto.master',
@@ -61,24 +61,29 @@ class autofs (
   }
 
   # variable preparations
-  if $autofs_package == 'DEFAULT' {
-    $autofs_package_real = $autofs_package_default
-  } else {
-    $autofs_package_real = $autofs_package
+  case $autofs_package {
+    undef:   { $autofs_package_real = $autofs_package_default }
+    default: { $autofs_package_real = $autofs_package }
   }
-  if $autofs_sysconfig == 'DEFAULT' {
-    $autofs_sysconfig_real = $autofs_sysconfig_default
-  } else {
-    $autofs_sysconfig_real = $autofs_sysconfig
+
+  case $autofs_sysconfig {
+    undef:   { $autofs_sysconfig_real = $autofs_sysconfig_default }
+    default: { $autofs_sysconfig_real = $autofs_sysconfig }
   }
-  if $autofs_auto_master == 'DEFAULT' {
-    $autofs_auto_master_real = $autofs_auto_master_default
-  } else {
-    $autofs_auto_master_real = $autofs_auto_master
+
+  case $autofs_auto_master {
+    undef:   { $autofs_auto_master_real = $autofs_auto_master_default }
+    default: { $autofs_auto_master_real = $autofs_auto_master }
   }
 
   # variable validations
+  if is_string($autofs_package_real) == false { fail('autofs::autofs_package is not a string.') }
   if is_string($autofs_service)      == false { fail('autofs::autofs_service is not a string.') }
+
+  validate_absolute_path(
+    $autofs_sysconfig_real,
+    $autofs_auto_master_real,
+  )
 
   if is_string($use_nis_maps) {
     $use_nis_maps_real = str2bool($use_nis_maps)
