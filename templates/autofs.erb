@@ -10,12 +10,12 @@ MASTER_MAP_NAME="auto.master"
 #
 # TIMEOUT - set the default mount timeout (default 600).
 #
-TIMEOUT=<%= @timeout %>
+TIMEOUT=<%= @timeout_int %>
 #
 # NEGATIVE_TIMEOUT - set the default negative timeout for
 #          failed mount attempts (default 60).
 #
-NEGATIVE_TIMEOUT=<%= @negative_timeout %>
+NEGATIVE_TIMEOUT=<%= @negative_timeout_int %>
 #
 # MOUNT_WAIT - time to wait for a response from mount(8).
 #          Setting this timeout can cause problems when
@@ -25,11 +25,11 @@ NEGATIVE_TIMEOUT=<%= @negative_timeout %>
 #          for mount(8) usually results in a wait of around
 #          3 minutes.
 #
-MOUNT_WAIT=<%= @mount_wait %>
+MOUNT_WAIT=<%= @mount_wait_int %>
 #
 # UMOUNT_WAIT - time to wait for a response from umount(8).
 #
-UMOUNT_WAIT=<%= @umount_wait %>
+UMOUNT_WAIT=<%= @umount_wait_int %>
 #
 # BROWSE_MODE - maps are browsable by default.
 #
@@ -40,7 +40,7 @@ BROWSE_MODE="<%= @browse_mode %>"
 #              the default automatically we need to
 #              set it in our configuration.
 #
-MOUNT_NFS_DEFAULT_PROTOCOL=<%= @mount_nfs_default_protocol %>
+MOUNT_NFS_DEFAULT_PROTOCOL=<%= @mount_nfs_default_protocol_int %>
 #
 # APPEND_OPTIONS - append to global options instead of replace.
 #

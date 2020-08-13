@@ -30,36 +30,37 @@ Set this to 'YES' if you want your mounts to be browseable
 
 - *Default*: 'NO'
 
-timeout
--------
-Set the default mount timeout
+---
+#### timeout (type: Integer)
+Default mount timeout.
 
-- *Default*: '600'
+- Default: **600**
 
-negative_timeout
-----------------
-Set the default negative timeout for failed mount attempts
+---
+#### negative_timeout (type: Integer)
+Default negative timeout for failed mount attempts.
 
-- *Default*: '60'
+- Default: **60**
 
-mount_wait
-----------
-Set the time to wait for a response from mount
+---
+#### mount_wait (type: Integer)
+Time to wait for a response from mount.
 
-- *Default*: '-1'
+- Default: **-1**
 
-umount_wait
------------
-Set the time to wait for a response from umount
+---
+#### umount_wait (type: Integer)
+Time to wait for a response from umount.
 
-- *Default*: '12'
+- Default: **12**
 
-mount_nfs_default_protocol
---------------------------
-Specify the default protocol used by mount.nfs
+---
+#### mount_nfs_default_protocol (type: Integer)
+Default protocol version used by mount.nfs
 
-- *Default*: '4'
+- Default: **4**
 
+---
 append_options
 --------------
 Specify whether options should be appended to global options or replacing them

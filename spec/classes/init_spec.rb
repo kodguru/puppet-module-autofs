@@ -93,31 +93,31 @@ describe 'autofs' do
     end
 
     context 'with timeout set to valid value <242>' do
-      let(:params) { { timeout: '242' } }
+      let(:params) { { timeout: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^TIMEOUT=242$}) }
     end
 
     context 'with negative_timeout set to valid value <242>' do
-      let(:params) { { negative_timeout: '242' } }
+      let(:params) { { negative_timeout: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^NEGATIVE_TIMEOUT=242$}) }
     end
 
     context 'with mount_wait set to valid value <242>' do
-      let(:params) { { mount_wait: '242' } }
+      let(:params) { { mount_wait: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_WAIT=242$}) }
     end
 
     context 'with umount_wait set to valid value <242>' do
-      let(:params) { { umount_wait: '242' } }
+      let(:params) { { umount_wait: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^UMOUNT_WAIT=242$}) }
     end
 
     context 'with mount_nfs_default_protocol set to valid value <3>' do
-      let(:params) { { mount_nfs_default_protocol: '3' } }
+      let(:params) { { mount_nfs_default_protocol: 3 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_NFS_DEFAULT_PROTOCOL=3$}) }
     end
@@ -476,13 +476,12 @@ describe 'autofs' do
       #        :invalid => [true,false,'invalid',3,2.42,['array']],
       #        :message => 'is not a Hash',
       #      },
-      # use validate_integer(value,max,min)
-      #      'integer' => {
-      #        :name    => ['timeout','negative_timeout','mount_wait','umount_wait','mount_nfs_default_protocol'],
-      #        :valid   => ['242','-242'],
-      #        :invalid => ['invalid',2.42,['array'],a={'ha'=>'sh'}],
-      #        :message => 'must be an integer',
-      #      },
+      'integer / stringified integer' => {
+        name:    ['timeout', 'negative_timeout', 'mount_wait', 'umount_wait', 'mount_nfs_default_protocol'],
+        valid:   [3, '3'],
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 2.42, false],
+        message: '(is not an integer|is not a number|cannot be converted to Numeric)', # source: (autofs:fail|Puppet 3 internal|Puppet >= 4 internal)
+      },
       'regex_service_ensure' => {
         name:    ['service_ensure'],
         valid:   ['stopped', 'running'],

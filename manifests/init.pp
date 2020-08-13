@@ -4,11 +4,11 @@
 #
 class autofs (
   $browse_mode                = 'NO',
-  $timeout                    = '600',
-  $negative_timeout           = '60',
-  $mount_wait                 = '-1',
-  $umount_wait                = '12',
-  $mount_nfs_default_protocol = '4',
+  $timeout                    = 600,
+  $negative_timeout           = 60,
+  $mount_wait                 = -1,
+  $umount_wait                = 12,
+  $mount_nfs_default_protocol = 4,
   $append_options             = 'yes',
   $logging                    = 'none',
   $maps                       = undef,
@@ -74,6 +74,36 @@ class autofs (
   case $autofs_auto_master {
     undef:   { $autofs_auto_master_real = $autofs_auto_master_default }
     default: { $autofs_auto_master_real = $autofs_auto_master }
+  }
+
+  case type3x($timeout) {
+    'integer': { $timeout_int = $timeout }
+    'string':  { $timeout_int = $timeout + 0}
+    default:   { fail('autofs::timeout is not an integer.') }
+  }
+
+  case type3x($negative_timeout) {
+    'integer': { $negative_timeout_int = $negative_timeout }
+    'string':  { $negative_timeout_int = $negative_timeout + 0}
+    default:   { fail('autofs::negative_timeout is not an integer.') }
+  }
+
+  case type3x($mount_wait) {
+    'integer': { $mount_wait_int = $mount_wait }
+    'string':  { $mount_wait_int = $mount_wait + 0}
+    default:   { fail('autofs::mount_wait is not an integer.') }
+  }
+
+  case type3x($umount_wait) {
+    'integer': { $umount_wait_int = $umount_wait }
+    'string':  { $umount_wait_int = $umount_wait + 0}
+    default:   { fail('autofs::umount_wait is not an integer.') }
+  }
+
+  case type3x($mount_nfs_default_protocol) {
+    'integer': { $mount_nfs_default_protocol_int = $mount_nfs_default_protocol }
+    'string':  { $mount_nfs_default_protocol_int = $mount_nfs_default_protocol + 0}
+    default:   { fail('autofs::mount_nfs_default_protocol is not an integer.') }
   }
 
   # variable validations
