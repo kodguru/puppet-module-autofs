@@ -138,44 +138,44 @@ Set this to true makes autofs use `-hosts` for the /net mountpoint. Set to false
 - Default: **true**
 
 ---
-# autofs::map parameters
+## autofs::map parameters
+---
+#### mountpoint (type: String)
+Specify the mountpoint in `auto.master`.
 
-mountpoint
-----------
-Specify the mountpoint
+- Default: **undef**
+
+---
+#### maptype (type: String)
+Specify maptype for mountpoint in `auto.master`.
+
+- Default: **undef**
+
+---
+#### mounts (type: Array)
+Specify the mounts to be mounted at mountpoint as an array.
+
+- Default: **[]**
+
+---
+#### manage (type: Boolean)
+Boolean to manage mounts in `auto.master`. Setting it to false will result in `-null` in `auto.master`.
+
+- Default: **true**
+
+---
+#### file (type: String)
+Specify the mounts to be mounted at mountpoint from a file.
+
+- Default: **undef**
+
+---
+#### options (type: String)
+Specify extra mount points for this mountpoint in `auto.master`.
 
 - *Default*: undef
 
-maptype
--------
-Specify maptype for mountpoint
-
-- *Default*: undef
-
-mounts
-------
-Specify the mounts to be mounted at mountpoint as an array
-
-- *Default*: []
-
-manage
-------
-Specify whether mounts should be managed or not. Results in '-null' in auto.master
-
-- *Default*: true
-
-file
-----
-Specify the mounts to be mounted at mountpoint from a file
-
-- *Default*: undef
-
-options
--------
-Specify extra mount points for this mountpoint
-
-- *Default*: undef
-
+---
 # Examples
 
 Manage `/home` with mounts from a file on Puppet fileserver:

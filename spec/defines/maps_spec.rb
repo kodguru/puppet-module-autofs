@@ -6,7 +6,7 @@ describe 'autofs::map' do
   context 'with defaults for all parameters' do
     it { is_expected.to compile.with_all_deps }
     it {
-      is_expected.to contain_file('mountmap_example').with(
+      is_expected.to contain_file('mountmap_example').only_with(
         'ensure'  => 'file',
         'path'    => '/etc/auto.example',
         'owner'   => 'root',
@@ -26,7 +26,6 @@ describe 'autofs::map' do
       }
     end
 
-    # enhancement: move conditional logic from template to code
     context 'with mounts set to valid string <spectest server:/spec/test]>' do
       let(:params) { { mounts: ['spectest server:/spec/test'] } }
 
@@ -39,7 +38,7 @@ describe 'autofs::map' do
       let(:params) { { file: 'puppet:///files/autofs/specific.map' } }
 
       it {
-        is_expected.to contain_file('mountmap_example').with(
+        is_expected.to contain_file('mountmap_example').only_with(
           'ensure' => 'file',
           'path'   => '/etc/auto.example',
           'owner'  => 'root',
@@ -60,7 +59,7 @@ describe 'autofs::map' do
         let(:params) { { :"#{param}" => 'unneeded' } }
 
         it {
-          is_expected.to contain_file('mountmap_example').with(
+          is_expected.to contain_file('mountmap_example').only_with(
             'ensure' => 'file',
             'path'    => '/etc/auto.example',
             'owner'   => 'root',
@@ -78,27 +77,18 @@ describe 'autofs::map' do
     let(:title) { 'example' }
 
     validations = {
-      # use validate_hash()
-      #      'hash' => {
-      #        :name    => ['mounts'],
-      #        :valid   => [ ['hello','spectest'],],
-      #        :invalid => [true,false,'invalid',3,2.42,['array']],
-      #        :message => 'is not a Hash',
-      #      },
-      # use validate_string()
-      #      'string' => {
-      #        :name    => ['mounts'],
-      #        :valid   => ['hello spectest'],
-      #        :invalid => [['array'],a={'ha'=>'sh'},3,2.42,true,false],
-      #        :message => 'must be a string',
-      #      },
-      # use validate_string()
-      #      'string_file_source' => {
-      #        :name    => ['file'],
-      #        :valid   => ['puppet:///files/autofs/specific.map'],
-      #        :invalid => [['array'],a={'ha'=>'sh'},3,2.42,true,false],
-      #        :message => 'must be a string',
-      #      },
+      'array / string' => {
+        name:    ['mounts'],
+        valid:   [['array'], 'string'],
+        invalid: [{ 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'is not an array', # source: autofs::maps:fail
+      },
+      'string for file source' => {
+        name:    ['file'],
+        valid:   ['puppet:///test', '/test/ing', 'file:///test/ing'],
+        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'is not a string', # source: autofs::maps:fail
+      },
     }
 
     validations.sort.each do |type, var|

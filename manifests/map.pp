@@ -15,25 +15,29 @@ define autofs::map (
 ) {
 
   $mnt = $name
-  $mountmap = "/etc/auto.${mnt}"
 
-  if $file == undef {
-    file { "mountmap_${mnt}":
-      ensure  => file,
-      path    => $mountmap,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => template('autofs/mountmap.erb'),
-    }
-  } else {
-    file { "mountmap_${mnt}":
-      ensure => file,
-      path   => $mountmap,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0644',
-      source => $file,
-    }
+  # variable preparations and validations
+  case type3x($mounts) {
+    'array':  { $mounts_array = $mounts }
+    'string': { $mounts_array = [ $mounts ] }
+    default:  { fail('autofs::map::mounts is not an array.') }
+  }
+
+  if is_string($file) == false { fail('autofs::map::file is not a string.') }
+
+  # functionality
+  $content = $file ? {
+    undef   => template('autofs/mountmap.erb'),
+    default => undef,
+  }
+
+  file { "mountmap_${mnt}":
+    ensure  => file,
+    path    => "/etc/auto.${mnt}",
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => $file,
+    content => $content,
   }
 }
