@@ -3,11 +3,14 @@
 # Manage autofs maps
 #
 define autofs::map (
+  $mounts     = [],
+  $file       = undef,
+  # $autofs::maps which gets passed here, is also used for auto.master template.
+  # The following parameters are not used in the mountmap.erb template.
+  # But they need to exist to avoid "invalid parameter options" errors.
   $mountpoint = undef,
   $maptype    = undef,
-  $mounts     = [],
   $manage     = true,
-  $file       = undef,
   $options    = undef,
 ) {
 
