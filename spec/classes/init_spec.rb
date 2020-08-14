@@ -46,13 +46,13 @@ describe 'autofs' do
       it { is_expected.to contain_class('autofs') }
 
       it {
-        is_expected.to contain_package('autofs').with(
+        is_expected.to contain_package('autofs').only_with(
           'ensure' => 'installed',
           'name'   => v[:autofs_package],
         )
       }
       it {
-        is_expected.to contain_file('autofs_sysconfig').with(
+        is_expected.to contain_file('autofs_sysconfig').only_with(
           'ensure'  => 'file',
           'path'    => v[:autofs_sysconfig],
           'owner'   => 'root',
@@ -63,7 +63,7 @@ describe 'autofs' do
         )
       }
       it {
-        is_expected.to contain_file('auto.master').with(
+        is_expected.to contain_file('auto.master').only_with(
           'ensure'  => 'file',
           'path'    => v[:autofs_auto_master],
           'owner'   => 'root',
@@ -74,7 +74,7 @@ describe 'autofs' do
         )
       }
       it {
-        is_expected.to contain_service('autofs').with(
+        is_expected.to contain_service('autofs').only_with(
           'ensure'    => 'running',
           'name'      => v[:autofs_service],
           'enable'    => 'true',
@@ -139,9 +139,10 @@ describe 'autofs' do
 
       it { is_expected.to have_autofs__map_resource_count(1) }
       it {
-        is_expected.to contain_autofs__map('home').with(
+        is_expected.to contain_autofs__map('home').only_with(
           'mountpoint' => 'home',
           'mounts'     => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'],
+          'manage'     => true,
         )
       }
     end
@@ -159,15 +160,17 @@ describe 'autofs' do
 
         it { is_expected.to have_autofs__map_resource_count(2) }
         it {
-          is_expected.to contain_autofs__map('group').with(
+          is_expected.to contain_autofs__map('group').only_with(
             'mountpoint' => 'from_hiera_fqdn',
             'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
+            'manage'     => true,
           )
         }
         it {
-          is_expected.to contain_autofs__map('home_from_hiera_fqdn').with(
+          is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
             'mountpoint' => 'home',
             'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+            'manage'     => true,
           )
         }
       end
@@ -177,21 +180,24 @@ describe 'autofs' do
 
         it { is_expected.to have_autofs__map_resource_count(3) }
         it {
-          is_expected.to contain_autofs__map('group').with(
+          is_expected.to contain_autofs__map('group').only_with(
             'mountpoint' => 'from_hiera_fqdn',
             'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
+            'manage'     => true,
           )
         }
         it {
-          is_expected.to contain_autofs__map('home_from_hiera_fqdn').with(
+          is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
             'mountpoint' => 'home',
             'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+            'manage'     => true,
           )
         }
         it {
-          is_expected.to contain_autofs__map('home_from_hiera_group').with(
+          is_expected.to contain_autofs__map('home_from_hiera_group').only_with(
             'mountpoint' => 'home',
             'mounts'     => ['home nfsserver:/home/from/hiera/group'],
+            'manage'     => true,
           )
         }
       end
