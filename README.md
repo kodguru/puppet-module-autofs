@@ -72,11 +72,10 @@ Set default log level `none`, `verbose` or `debug`.
 - Default: **'none'**
 
 ---
-maps
-----
-Specify the maps managed. This value is sent to define autofs::map
+#### maps (type: Hash)
+Specify the maps managed. This value is sent to define `autofs::map`.
 
-- *Default*: undef
+- Default: **{}**
 
 ---
 #### maps_hiera_merge (type: Boolean)

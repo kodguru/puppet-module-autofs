@@ -469,13 +469,12 @@ describe 'autofs' do
         invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
         message: '(is not a boolean|Unknown type of boolean)', # source: (autofs:fail|stdlib:str2bool)
       },
-      # use validate_hash()
-      #      'hash' => {
-      #        :name    => ['maps'],
-      #        :valid   => [a={'ha'=>'sh'},a={'test1@test.void'=>'destination1','test2@test.void'=>['destination2','destination3']}],
-      #        :invalid => [true,false,'invalid',3,2.42,['array']],
-      #        :message => 'is not a Hash',
-      #      },
+      'hash' => {
+        name:    ['maps'],
+        valid:   [], # Valid hashes are too complex to test them easily here. They should have their own tests anyway.
+        invalid: ['string', ['array'], 3, 2.42, false],
+        message: 'is not a hash', # source: autofs:fail
+      },
       'integer / stringified integer' => {
         name:    ['timeout', 'negative_timeout', 'mount_wait', 'umount_wait', 'mount_nfs_default_protocol'],
         valid:   [3, '3'],
