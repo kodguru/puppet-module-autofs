@@ -482,18 +482,23 @@ describe 'autofs' do
         invalid: ['string', ['array'], { 'ha' => 'sh' }, 2.42, false],
         message: '(is not an integer|is not a number|cannot be converted to Numeric)', # source: (autofs:fail|Puppet 3 internal|Puppet >= 4 internal)
       },
-      'regex_service_ensure' => {
-        name:    ['service_ensure'],
-        valid:   ['stopped', 'running'],
-        invalid: ['invalid', 'true', 'false', ['array'], { 'ha' => 'sh' }, 3, 2.42, true, false, nil],
-        message: '(must be running or stopped|input needs to be a String)',
-      },
-      # add missing validate_string() for 'browse_mode','append_options','logging','autofs_package','nis_master_name'
       'string' => {
-        name:    ['autofs_package', 'autofs_service'],
+        name:    ['browse_mode', 'append_options', 'autofs_package', 'autofs_service', 'nis_master_name'],
         valid:   ['string'],
         invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
         message: 'is not a string', # source: autofs:fail
+      },
+      'string for logging' => {
+        name:    ['logging'],
+        valid:   ['none', 'verbose', 'debug'],
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: '(input needs to be a String|must be none, verbose or debug)', # source: stdlib5:(internal|:message)
+      },
+      'string for service ensure' => {
+        name:    ['service_ensure'],
+        valid:   ['stopped', 'running'],
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: '(input needs to be a String|must be running or stopped)', # source: stdlib5:(internal|:message)
       },
     }
 

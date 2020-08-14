@@ -131,24 +131,25 @@ class autofs (
   }
 
   # variable validations
+  if is_string($browse_mode)         == false { fail('autofs::browse_mode is not a string.') }
+  if is_string($append_options)      == false { fail('autofs::append_options is not a string.') }
   if is_string($autofs_package_real) == false { fail('autofs::autofs_package is not a string.') }
   if is_string($autofs_service)      == false { fail('autofs::autofs_service is not a string.') }
+  if is_string($nis_master_name)     == false { fail('autofs::nis_master_name is not a string.') }
+
+  validate_re($service_ensure, '^(running|stopped)$', "service_ensure must be running or stopped, got ${service_ensure}")
+  validate_re($logging, '^(none|verbose|debug)$', "service_ensure must be none, verbose or debug, got ${service_ensure}")
 
   validate_absolute_path(
     $autofs_sysconfig_real,
     $autofs_auto_master_real,
   )
 
-  validate_string($nis_master_name)
-
   if $maps_hiera_merge_bool == true {
     $maps_real = hiera_hash('autofs::maps', undef)
   } else {
     $maps_real = $maps
   }
-
-  validate_re($service_ensure,
-    '^running$|^stopped$', "service_ensure must be running or stopped, got ${service_ensure}")
 
   package { 'autofs':
     ensure => installed,

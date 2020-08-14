@@ -23,12 +23,11 @@ exact matrix of supported Puppet and ruby versions.
 
 # Parameters
 ------------
+---
+#### browse_mode (type: String)
+Set this to `YES` if you want your mounts to be browseable.
 
-browse_mode
------------
-Set this to 'YES' if you want your mounts to be browseable
-
-- *Default*: 'NO'
+- Default: **'NO'**
 
 ---
 #### timeout (type: Integer)
@@ -61,18 +60,18 @@ Default protocol version used by mount.nfs
 - Default: **4**
 
 ---
-append_options
---------------
-Specify whether options should be appended to global options or replacing them
+#### append_options (type: String)
+Specify whether options should be appended to global options or replacing them.
 
-- *Default*: 'yes'
+- Default: **'yes'**
 
-logging
--------
-Set default log level "none", "verbose" or "debug"
+---
+#### logging (type: String)
+Set default log level `none`, `verbose` or `debug`.
 
-- *Default*: 'none'
+- Default: **'none'**
 
+---
 maps
 ----
 Specify the maps managed. This value is sent to define autofs::map
@@ -101,7 +100,7 @@ Absolute path for autofs sysconfig location. Unset, this parameter will choose t
 #### autofs_service (type: String)
 Service name for autofs to manage.
 
-- *Default*: **'autofs'**
+- Default: **'autofs'**
 
 ---
 #### autofs_auto_master (type: String)
@@ -116,17 +115,16 @@ If the module should load mount maps from NIS.
 - Default: **true**
 
 ---
-nis_master_name
----------------
-The name of the NIS map containing the auto.master data
+#### nis_master_name (type: String)
+The name of the NIS map containing the auto.master data.
 
-- *Default*: auto.master
+- Default: **'auto.master'**
 
-service_ensure
---------------
-Value for the service ensure attribute
+---
+#### service_ensure (type: String)
+Value for the service ensure attribute. Valid values are `running` and `stopped`.
 
-- *Default*: 'running'
+- Default: **'running'**
 
 ---
 #### service_enable (type: Boolean)
