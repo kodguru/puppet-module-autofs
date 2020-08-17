@@ -46,13 +46,13 @@ describe 'autofs' do
       it { is_expected.to contain_class('autofs') }
 
       it {
-        is_expected.to contain_package('autofs').with(
+        is_expected.to contain_package('autofs').only_with(
           'ensure' => 'installed',
           'name'   => v[:autofs_package],
         )
       }
       it {
-        is_expected.to contain_file('autofs_sysconfig').with(
+        is_expected.to contain_file('autofs_sysconfig').only_with(
           'ensure'  => 'file',
           'path'    => v[:autofs_sysconfig],
           'owner'   => 'root',
@@ -63,7 +63,7 @@ describe 'autofs' do
         )
       }
       it {
-        is_expected.to contain_file('auto.master').with(
+        is_expected.to contain_file('auto.master').only_with(
           'ensure'  => 'file',
           'path'    => v[:autofs_auto_master],
           'owner'   => 'root',
@@ -74,7 +74,7 @@ describe 'autofs' do
         )
       }
       it {
-        is_expected.to contain_service('autofs').with(
+        is_expected.to contain_service('autofs').only_with(
           'ensure'    => 'running',
           'name'      => v[:autofs_service],
           'enable'    => 'true',
@@ -93,31 +93,31 @@ describe 'autofs' do
     end
 
     context 'with timeout set to valid value <242>' do
-      let(:params) { { timeout: '242' } }
+      let(:params) { { timeout: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^TIMEOUT=242$}) }
     end
 
     context 'with negative_timeout set to valid value <242>' do
-      let(:params) { { negative_timeout: '242' } }
+      let(:params) { { negative_timeout: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^NEGATIVE_TIMEOUT=242$}) }
     end
 
     context 'with mount_wait set to valid value <242>' do
-      let(:params) { { mount_wait: '242' } }
+      let(:params) { { mount_wait: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_WAIT=242$}) }
     end
 
     context 'with umount_wait set to valid value <242>' do
-      let(:params) { { umount_wait: '242' } }
+      let(:params) { { umount_wait: 242 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^UMOUNT_WAIT=242$}) }
     end
 
     context 'with mount_nfs_default_protocol set to valid value <3>' do
-      let(:params) { { mount_nfs_default_protocol: '3' } }
+      let(:params) { { mount_nfs_default_protocol: 3 } }
 
       it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_NFS_DEFAULT_PROTOCOL=3$}) }
     end
@@ -139,9 +139,10 @@ describe 'autofs' do
 
       it { is_expected.to have_autofs__map_resource_count(1) }
       it {
-        is_expected.to contain_autofs__map('home').with(
+        is_expected.to contain_autofs__map('home').only_with(
           'mountpoint' => 'home',
           'mounts'     => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'],
+          'manage'     => true,
         )
       }
     end
@@ -155,43 +156,48 @@ describe 'autofs' do
       end
 
       context 'set to valid value <false>' do
-        let(:params) { { maps_hiera_merge: 'false' } }
+        let(:params) { { maps_hiera_merge: false } }
 
         it { is_expected.to have_autofs__map_resource_count(2) }
         it {
-          is_expected.to contain_autofs__map('group').with(
+          is_expected.to contain_autofs__map('group').only_with(
             'mountpoint' => 'from_hiera_fqdn',
             'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
+            'manage'     => true,
           )
         }
         it {
-          is_expected.to contain_autofs__map('home_from_hiera_fqdn').with(
+          is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
             'mountpoint' => 'home',
             'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+            'manage'     => true,
           )
         }
       end
 
       context 'set to valid value <true>' do
-        let(:params) { { maps_hiera_merge: 'true' } }
+        let(:params) { { maps_hiera_merge: true } }
 
         it { is_expected.to have_autofs__map_resource_count(3) }
         it {
-          is_expected.to contain_autofs__map('group').with(
+          is_expected.to contain_autofs__map('group').only_with(
             'mountpoint' => 'from_hiera_fqdn',
             'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
+            'manage'     => true,
           )
         }
         it {
-          is_expected.to contain_autofs__map('home_from_hiera_fqdn').with(
+          is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
             'mountpoint' => 'home',
             'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+            'manage'     => true,
           )
         }
         it {
-          is_expected.to contain_autofs__map('home_from_hiera_group').with(
+          is_expected.to contain_autofs__map('home_from_hiera_group').only_with(
             'mountpoint' => 'home',
             'mounts'     => ['home nfsserver:/home/from/hiera/group'],
+            'manage'     => true,
           )
         }
       end
@@ -216,7 +222,7 @@ describe 'autofs' do
     end
 
     context 'with use_nis_maps set to valid value <false>' do
-      let(:params) { { use_nis_maps: 'false' } }
+      let(:params) { { use_nis_maps: false } }
 
       it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n\n") }
     end
@@ -240,7 +246,7 @@ describe 'autofs' do
     end
 
     context 'with service_enable set to valid value <false>' do
-      let(:params) { { service_enable: 'false' } }
+      let(:params) { { service_enable: false } }
 
       it { is_expected.to contain_service('autofs').with_enable('false') }
     end
@@ -457,46 +463,47 @@ describe 'autofs' do
     let(:facts) { { group: 'data_from_hiera_group' } }
 
     validations = {
-      # use validate_absolute_path()
-      #      'absolute_path' => {
-      #        :name    => ['autofs_sysconfig','autofs_auto_master'],
-      #        :valid   => ['/absolute/filepath','/absolute/directory/'],
-      #        :invalid => ['invalid',3,2.42,['array'],a={'ha'=>'sh'}],
-      #        :message => 'is not an absolute path',
-      #      },
-      'bool_stringified' => {
+      'absolute_path' => {
+        name:    ['autofs_sysconfig','autofs_auto_master'],
+        valid:   ['/absolute/filepath', '/absolute/directory/'],
+        invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
+        message: 'is not an absolute path', # source: stdlib:validate_absolute_path
+      },
+      'boolean / stringified boolean' => {
         name:    ['maps_hiera_merge', 'use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
         valid:   [true, 'true', false, 'false'],
-        invalid: [nil, 'invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }],
-        message: '(is not a boolean|Unknown type of boolean)',
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
+        message: '(is not a boolean|Unknown type of boolean)', # source: (autofs:fail|stdlib:str2bool)
       },
-      # use validate_hash()
-      #      'hash' => {
-      #        :name    => ['maps'],
-      #        :valid   => [a={'ha'=>'sh'},a={'test1@test.void'=>'destination1','test2@test.void'=>['destination2','destination3']}],
-      #        :invalid => [true,false,'invalid',3,2.42,['array']],
-      #        :message => 'is not a Hash',
-      #      },
-      # use validate_integer(value,max,min)
-      #      'integer' => {
-      #        :name    => ['timeout','negative_timeout','mount_wait','umount_wait','mount_nfs_default_protocol'],
-      #        :valid   => ['242','-242'],
-      #        :invalid => ['invalid',2.42,['array'],a={'ha'=>'sh'}],
-      #        :message => 'must be an integer',
-      #      },
-      'regex_service_ensure' => {
+      'hash' => {
+        name:    ['maps'],
+        valid:   [], # Valid hashes are too complex to test them easily here. They should have their own tests anyway.
+        invalid: ['string', ['array'], 3, 2.42, false],
+        message: 'is not a hash', # source: autofs:fail
+      },
+      'integer / stringified integer' => {
+        name:    ['timeout', 'negative_timeout', 'mount_wait', 'umount_wait', 'mount_nfs_default_protocol'],
+        valid:   [3, '3'],
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 2.42, false],
+        message: '(is not an integer|is not a number|cannot be converted to Numeric)', # source: (autofs:fail|Puppet 3 internal|Puppet >= 4 internal)
+      },
+      'string' => {
+        name:    ['browse_mode', 'append_options', 'autofs_package', 'autofs_service', 'nis_master_name'],
+        valid:   ['string'],
+        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'is not a string', # source: autofs:fail
+      },
+      'string for logging' => {
+        name:    ['logging'],
+        valid:   ['none', 'verbose', 'debug'],
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: '(input needs to be a String|must be none, verbose or debug)', # source: stdlib5:(internal|:message)
+      },
+      'string for service ensure' => {
         name:    ['service_ensure'],
         valid:   ['stopped', 'running'],
-        invalid: ['invalid', 'true', 'false', ['array'], { 'ha' => 'sh' }, 3, 2.42, true, false, nil],
-        message: '(must be running or stopped|input needs to be a String)',
-      },
-      # add missing validate_string() for 'browse_mode','append_options','logging','autofs_package','autofs_service'
-      'string' => {
-        #        :name    => ['browse_mode','append_options','logging','autofs_package','autofs_service','nis_master_name'],
-        name:    ['nis_master_name'],
-        valid:   ['valid'],
-        invalid: [['array'], { 'ha' => 'sh' }],
-        message: 'is not a string',
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: '(input needs to be a String|must be running or stopped)', # source: stdlib5:(internal|:message)
       },
     }
 

@@ -23,160 +23,159 @@ exact matrix of supported Puppet and ruby versions.
 
 # Parameters
 ------------
+---
+#### browse_mode (type: String)
+Set this to `YES` if you want your mounts to be browseable.
 
-browse_mode
------------
-Set this to 'YES' if you want your mounts to be browseable
+- Default: **'NO'**
 
-- *Default*: 'NO'
+---
+#### timeout (type: Integer)
+Default mount timeout.
 
-timeout
--------
-Set the default mount timeout
+- Default: **600**
 
-- *Default*: '600'
+---
+#### negative_timeout (type: Integer)
+Default negative timeout for failed mount attempts.
 
-negative_timeout
-----------------
-Set the default negative timeout for failed mount attempts
+- Default: **60**
 
-- *Default*: '60'
+---
+#### mount_wait (type: Integer)
+Time to wait for a response from mount.
 
-mount_wait
-----------
-Set the time to wait for a response from mount
+- Default: **-1**
 
-- *Default*: '-1'
+---
+#### umount_wait (type: Integer)
+Time to wait for a response from umount.
 
-umount_wait
------------
-Set the time to wait for a response from umount
+- Default: **12**
 
-- *Default*: '12'
+---
+#### mount_nfs_default_protocol (type: Integer)
+Default protocol version used by mount.nfs
 
-mount_nfs_default_protocol
---------------------------
-Specify the default protocol used by mount.nfs
+- Default: **4**
 
-- *Default*: '4'
+---
+#### append_options (type: String)
+Specify whether options should be appended to global options or replacing them.
 
-append_options
---------------
-Specify whether options should be appended to global options or replacing them
+- Default: **'yes'**
 
-- *Default*: 'yes'
+---
+#### logging (type: String)
+Set default log level `none`, `verbose` or `debug`.
 
-logging
--------
-Set default log level "none", "verbose" or "debug"
+- Default: **'none'**
 
-- *Default*: 'none'
+---
+#### maps (type: Hash)
+Specify the maps managed. This value is sent to define `autofs::map`.
 
-maps
-----
-Specify the maps managed. This value is sent to define autofs::map
+- Default: **{}**
 
-- *Default*: undef
+---
+#### maps_hiera_merge (type: Boolean)
+If the module should merge `$maps` from different levels in hiera.
 
-maps_hiera_merge
-----------------
-Set this value to true if you want *maps* to be merged from different levels in
-hiera
+- Default: **false**
 
-- *Default*: false
+---
+#### autofs_package (type: String)
+Package name for autofs. Unset, this parameter will choose the appropriate default for the system.
 
-autofs_package
---------------
-Specify autofs package name
+- Default: **undef**
 
-- *Default*: 'DEFAULT'
+---
+#### autofs_sysconfig (type: String)
+Absolute path for autofs sysconfig location. Unset, this parameter will choose the appropriate default for the system.
 
-autofs_sysconfig
-----------------
-Specify autofs sysconfig location
+- Default: **undef**
 
-- *Default*: 'DEFAULT'
+---
+#### autofs_service (type: String)
+Service name for autofs to manage.
 
-autofs_service
---------------
-Specify autofs service name
+- Default: **'autofs'**
 
-- *Default*: 'DEFAULT'
+---
+#### autofs_auto_master (type: String)
+Absolute path for autofs.master location. Unset, this parameter will choose the appropriate default for the system.
 
-autofs_auto_master
-------------------
-Specify autofs.master location
+- Default: **undef**
 
-- *Default*: 'DEFAULT'
+---
+#### use_nis_maps (type: Boolean)
+If the module should load mount maps from NIS.
 
-use_nis_maps
-------------
-Set this to true make the module load mount maps from NIS
+- Default: **true**
 
-- *Default*: true
+---
+#### nis_master_name (type: String)
+The name of the NIS map containing the auto.master data.
 
-nis_master_name
----------------
-The name of the NIS map containing the auto.master data
+- Default: **'auto.master'**
 
-- *Default*: auto.master
+---
+#### service_ensure (type: String)
+Value for the service ensure attribute. Valid values are `running` and `stopped`.
 
-service_ensure
---------------
-Value for the service ensure attribute
+- Default: **'running'**
 
-- *Default*: 'running'
+---
+#### service_enable (type: Boolean)
+Value for the service enable attribute.
 
-service_enable
---------------
-Value for the service enable attribute
+- Default: **true**
 
-- *Default*: true
+---
+#### use_dash_hosts_for_net (type: Boolean)
+Set this to true makes autofs use `-hosts` for the /net mountpoint. Set to false to use `/etc/auto.net`.
 
-use_dash_hosts_for_net
-----------------------
-Set this to true makes autofs use "-hosts" for the /net mountpoint.  Set to false to use "/etc/auto.net"
+- Default: **true**
 
-- *Default*: true
+---
+## autofs::map parameters
+---
+#### mountpoint (type: String)
+Specify the mountpoint in `auto.master`.
 
-# autofs::map parameters
+- Default: **undef**
 
-mountpoint
-----------
-Specify the mountpoint
+---
+#### maptype (type: String)
+Specify maptype for mountpoint in `auto.master`.
 
-- *Default*: undef
+- Default: **undef**
 
-maptype
--------
-Specify maptype for mountpoint
+---
+#### mounts (type: Array)
+Specify the mounts to be mounted at mountpoint as an array.
 
-- *Default*: undef
+- Default: **[]**
 
-mounts
-------
-Specify the mounts to be mounted at mountpoint as an array
+---
+#### manage (type: Boolean)
+Boolean to manage mounts in `auto.master`. Setting it to false will result in `-null` in `auto.master`.
 
-- *Default*: []
+- Default: **true**
 
-manage
-------
-Specify whether mounts should be managed or not. Results in '-null' in auto.master
+---
+#### file (type: String)
+Specify the mounts to be mounted at mountpoint from a file.
 
-- *Default*: true
+- Default: **undef**
 
-file
-----
-Specify the mounts to be mounted at mountpoint from a file
-
-- *Default*: undef
-
-options
--------
-Specify extra mount points for this mountpoint
+---
+#### options (type: String)
+Specify extra mount points for this mountpoint in `auto.master`.
 
 - *Default*: undef
 
+---
 # Examples
 
 Manage `/home` with mounts from a file on Puppet fileserver:
