@@ -224,7 +224,7 @@ describe 'autofs' do
     context 'with use_nis_maps set to valid value <false>' do
       let(:params) { { use_nis_maps: false } }
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n") }
     end
 
     context 'with use_dash_hosts_for_net set to valid value <false>' do
