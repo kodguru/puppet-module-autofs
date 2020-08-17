@@ -354,7 +354,7 @@ describe 'autofs' do
     end
   end
 
-  # TODO: Discuss and clarify the maptype function on Solaris. Currently maptype is added to output.
+  # TODO: Discuss and clarify the maptype function on Solaris. Currently maptype is not added to the output.
   context 'with maps on Solaris (for auto.master file) set to valid value' do
     head = "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n/net -hosts\n\n"
     tail = "\n\n+auto.master\n"
