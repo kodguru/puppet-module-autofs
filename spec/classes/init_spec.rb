@@ -70,7 +70,7 @@ describe 'autofs' do
           'group'   => 'root',
           'mode'    => '0644',
           'require' => 'Package[autofs]',
-          'content' => "#{auto_master_header}/net -hosts\n\n\n+auto.master\n",
+          'content' => "#{auto_master_header}/net -hosts\n\n+auto.master\n",
         )
       }
       it {
@@ -224,19 +224,19 @@ describe 'autofs' do
     context 'with use_nis_maps set to valid value <false>' do
       let(:params) { { use_nis_maps: false } }
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n") }
     end
 
     context 'with use_dash_hosts_for_net set to valid value <false>' do
       let(:params) { { use_dash_hosts_for_net: false } }
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net \/etc\/auto.net --timeout=60\n\n\n+auto.master\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net \/etc\/auto.net --timeout=60\n\n+auto.master\n") }
     end
 
     context 'with nis_master_name set to valid value <bike.meister>' do
       let(:params) { { nis_master_name: 'bike.meister' } }
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n\n+bike\.meister\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n+bike\.meister\n") }
     end
 
     context 'with service_ensure set to valid value <stopped>' do

@@ -6,8 +6,8 @@
 <% else -%>
 /net /etc/auto.net --timeout=60
 <% end -%>
+<% if @maps_real.any? -%>
 
-<% if @maps_real -%>
 <%   @maps_real.keys.sort.each do |key| -%>
 <%     if @maps_real[key]['mountpoint'] -%>
 <%       if @maps_real[key]['maptype'] -%>
