@@ -70,7 +70,7 @@ describe 'autofs' do
           'group'   => 'root',
           'mode'    => '0644',
           'require' => 'Package[autofs]',
-          'content' => "#{auto_master_header}/net -hosts\n\n\n+auto.master\n",
+          'content' => "#{auto_master_header}/net -hosts\n\n+auto.master\n",
         )
       }
       it {
@@ -224,19 +224,19 @@ describe 'autofs' do
     context 'with use_nis_maps set to valid value <false>' do
       let(:params) { { use_nis_maps: false } }
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n") }
     end
 
     context 'with use_dash_hosts_for_net set to valid value <false>' do
       let(:params) { { use_dash_hosts_for_net: false } }
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net \/etc\/auto.net --timeout=60\n\n\n+auto.master\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net \/etc\/auto.net --timeout=60\n\n+auto.master\n") }
     end
 
     context 'with nis_master_name set to valid value <bike.meister>' do
       let(:params) { { nis_master_name: 'bike.meister' } }
 
-      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n\n+bike\.meister\n") }
+      it { is_expected.to contain_file('auto.master').with_content("#{auto_master_header}/net -hosts\n\n+bike\.meister\n") }
     end
 
     context 'with service_ensure set to valid value <stopped>' do
@@ -354,23 +354,12 @@ describe 'autofs' do
     end
   end
 
-  # TODO: Discuss and clarify the maptype function on Solaris. Currently maptype is added to output.
+  # TODO: Discuss and clarify the maptype function on Solaris. Currently maptype is not added to the output.
+  # Tests to proof the different handling of maptype on Solaris.
   context 'with maps on Solaris (for auto.master file) set to valid value' do
     head = "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n/net -hosts\n\n"
     tail = "\n\n+auto.master\n"
     let(:facts) { { osfamily: 'Solaris' } }
-
-    context '<test => {}>' do
-      let(:params) { { maps: { 'test' => {} } } }
-
-      it { is_expected.to contain_file('auto.master').with_content("#{head}/test /etc/auto.test#{tail}") }
-    end
-
-    context '<test => { mountpoint => mountpoint }>' do
-      let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint' } } } }
-
-      it { is_expected.to contain_file('auto.master').with_content("#{head}/mountpoint /etc/auto.test#{tail}") }
-    end
 
     context '<test => { mountpoint => mountpoint, maptype => nis }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis' } } } }
@@ -384,35 +373,11 @@ describe 'autofs' do
       it { is_expected.to contain_file('auto.master').with_content("#{head}/mountpoint test#{tail}") }
     end
 
-    context '<test => { mountpoint => mountpoint, manage => false }>' do
-      let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'manage' => false } } } }
-
-      it { is_expected.to contain_file('auto.master').with_content("#{head}/mountpoint -null#{tail}") }
-    end
-
     # same test as above with options set
-    context '<test => { options => ro }>' do
-      let(:params) { { maps: { 'test' => { 'options' => 'ro' } } } }
-
-      it { is_expected.to contain_file('auto.master').with_content("#{head}/test /etc/auto.test ro#{tail}") }
-    end
-
-    context '<test => { mountpoint => mountpoint, options => ro }>' do
-      let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'options' => 'ro' } } } }
-
-      it { is_expected.to contain_file('auto.master').with_content("#{head}/mountpoint /etc/auto.test ro#{tail}") }
-    end
-
     context '<test => { mountpoint => mountpoint, maptype => nis, options => ro }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis', 'options' => 'ro' } } } }
 
       it { is_expected.to contain_file('auto.master').with_content("#{head}/mountpoint test ro#{tail}") }
-    end
-
-    context '<test => { mountpoint => mountpoint, manage => false, options => ro }>' do
-      let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'manage' => false, 'options' => 'ro' } } } }
-
-      it { is_expected.to contain_file('auto.master').with_content("#{head}/mountpoint -null ro#{tail}") }
     end
 
     # multi mounts example with easy readable result
