@@ -30,19 +30,19 @@ class autofs (
       $autofs_package_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
-      $autofs_sysconfig_template  = 'autofs/autofs.erb'
+      $autofs_sysconfig_template  = 'autofs/autofs_linux.erb'
     }
     'Suse': {
       $autofs_package_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
-      $autofs_sysconfig_template  = 'autofs/autofs.erb'
+      $autofs_sysconfig_template  = 'autofs/autofs_linux.erb'
     }
     'Debian': {
       $autofs_package_default     = 'autofs'
       $autofs_sysconfig_default   = '/etc/default/autofs'
       $autofs_auto_master_default = '/etc/auto.master'
-      $autofs_sysconfig_template  = 'autofs/autofs.erb'
+      $autofs_sysconfig_template  = 'autofs/autofs_linux.erb'
     }
     'Solaris': {
       $autofs_package_default     = 'SUNWatfsr'
@@ -57,20 +57,9 @@ class autofs (
   }
 
   # variable preparations
-  case $autofs_package {
-    undef:   { $autofs_package_real = $autofs_package_default }
-    default: { $autofs_package_real = $autofs_package }
-  }
-
-  case $autofs_sysconfig {
-    undef:   { $autofs_sysconfig_real = $autofs_sysconfig_default }
-    default: { $autofs_sysconfig_real = $autofs_sysconfig }
-  }
-
-  case $autofs_auto_master {
-    undef:   { $autofs_auto_master_real = $autofs_auto_master_default }
-    default: { $autofs_auto_master_real = $autofs_auto_master }
-  }
+  $autofs_package_real     = pick($autofs_package, $autofs_package_default)
+  $autofs_sysconfig_real   = pick($autofs_sysconfig, $autofs_sysconfig_default)
+  $autofs_auto_master_real = pick($autofs_auto_master, $autofs_auto_master_default)
 
   case type3x($timeout) {
     'integer': { $timeout_int = $timeout }

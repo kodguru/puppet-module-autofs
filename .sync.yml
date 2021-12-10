@@ -17,6 +17,7 @@ appveyor.yml:
 
 spec/spec_helper.rb:
   coverage_report: true
-  minimum_code_coverage_percentage: 35
+  # last missing resource is triggered by 'variable type and content validations' and can't be covered
+  minimum_code_coverage_percentage: 97
   hiera_config: 'spec/fixtures/hiera-testing/hiera.yaml'
   mock_with: ':rspec'
