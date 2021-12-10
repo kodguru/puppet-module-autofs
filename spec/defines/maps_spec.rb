@@ -6,7 +6,7 @@ describe 'autofs::map' do
   context 'with defaults for all parameters' do
     it { is_expected.to compile.with_all_deps }
     it {
-      is_expected.to contain_file('mountmap_example').only_with(
+      is_expected.to contain_file('autofs__map_mountmap_example').only_with(
         'ensure'  => 'file',
         'path'    => '/etc/auto.example',
         'owner'   => 'root',
@@ -22,7 +22,7 @@ describe 'autofs::map' do
       let(:params) { { mounts: ['spec srv:/path/spec', 'test srv:/path/test'] } }
 
       it {
-        is_expected.to contain_file('mountmap_example').with('content' => "#{mountmap_header}spec srv:/path/spec\ntest srv:/path/test\n")
+        is_expected.to contain_file('autofs__map_mountmap_example').with('content' => "#{mountmap_header}spec srv:/path/spec\ntest srv:/path/test\n")
       }
     end
 
@@ -30,7 +30,7 @@ describe 'autofs::map' do
       let(:params) { { mounts: ['spectest server:/spec/test'] } }
 
       it {
-        is_expected.to contain_file('mountmap_example').with('content' => "#{mountmap_header}spectest server:/spec/test\n")
+        is_expected.to contain_file('autofs__map_mountmap_example').with('content' => "#{mountmap_header}spectest server:/spec/test\n")
       }
     end
 
@@ -38,7 +38,7 @@ describe 'autofs::map' do
       let(:params) { { file: 'puppet:///files/autofs/specific.map' } }
 
       it {
-        is_expected.to contain_file('mountmap_example').only_with(
+        is_expected.to contain_file('autofs__map_mountmap_example').only_with(
           'ensure' => 'file',
           'path'   => '/etc/auto.example',
           'owner'  => 'root',
@@ -53,7 +53,7 @@ describe 'autofs::map' do
       let(:params) { { mappath: '/test/ing' } }
 
       it {
-        is_expected.to contain_file('mountmap_example').with('path' => '/test/ing' )
+        is_expected.to contain_file('autofs__map_mountmap_example').with('path' => '/test/ing')
       }
     end
 
@@ -61,10 +61,9 @@ describe 'autofs::map' do
       let(:params) { { mapname: 'testname' } }
 
       it {
-        is_expected.to contain_file('testname')
+        is_expected.to contain_file('autofs__map_testname')
       }
     end
-
   end
 
   context 'with non-functional parameters set' do
@@ -73,10 +72,10 @@ describe 'autofs::map' do
     # But they need to exist to avoid "invalid parameter options" errors.
     ['mountpoint', 'maptype', 'manage', 'options'].each do |param|
       context "with #{param} set to <unneeded>" do
-        let(:params) { { :"#{param}" => 'unneeded' } }
+        let(:params) { { "#{param}": 'unneeded' } }
 
         it {
-          is_expected.to contain_file('mountmap_example').only_with(
+          is_expected.to contain_file('autofs__map_mountmap_example').only_with(
             'ensure' => 'file',
             'path'    => '/etc/auto.example',
             'owner'   => 'root',
@@ -130,7 +129,7 @@ describe 'autofs::map' do
         var[:valid].each do |valid|
           context "when #{var_name} (#{type}) is set to valid #{valid} (as #{valid.class})" do
             let(:facts) { [mandatory_facts, var[:facts]].reduce(:merge) } unless var[:facts].nil?
-            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => valid }].reduce(:merge) }
+            let(:params) { [mandatory_params, var[:params], { "#{var_name}": valid }].reduce(:merge) }
 
             it { is_expected.to compile }
           end
@@ -138,7 +137,7 @@ describe 'autofs::map' do
 
         var[:invalid].each do |invalid|
           context "when #{var_name} (#{type}) is set to invalid #{invalid} (as #{invalid.class})" do
-            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => invalid }].reduce(:merge) }
+            let(:params) { [mandatory_params, var[:params], { "#{var_name}": invalid }].reduce(:merge) }
 
             it 'fails' do
               expect { is_expected.to contain_class(:subject) }.to raise_error(Puppet::Error, %r{#{var[:message]}})

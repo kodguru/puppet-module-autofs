@@ -445,7 +445,7 @@ describe 'autofs' do
 
     validations = {
       'absolute_path' => {
-        name:    ['autofs_sysconfig','autofs_auto_master'],
+        name:    ['autofs_sysconfig', 'autofs_auto_master'],
         valid:   ['/absolute/filepath', '/absolute/directory/'],
         invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
         message: 'is not an absolute path', # source: stdlib:validate_absolute_path
@@ -498,7 +498,7 @@ describe 'autofs' do
         var[:valid].each do |valid|
           context "when #{var_name} (#{type}) is set to valid #{valid} (as #{valid.class})" do
             let(:facts) { [mandatory_facts, var[:facts]].reduce(:merge) } unless var[:facts].nil?
-            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => valid }].reduce(:merge) }
+            let(:params) { [mandatory_params, var[:params], { "#{var_name}": valid }].reduce(:merge) }
 
             it { is_expected.to compile }
           end
@@ -506,7 +506,7 @@ describe 'autofs' do
 
         var[:invalid].each do |invalid|
           context "when #{var_name} (#{type}) is set to invalid #{invalid} (as #{invalid.class})" do
-            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => invalid }].reduce(:merge) }
+            let(:params) { [mandatory_params, var[:params], { "#{var_name}": invalid }].reduce(:merge) }
 
             it 'fails' do
               expect { is_expected.to contain_class(:subject) }.to raise_error(Puppet::Error, %r{#{var[:message]}})

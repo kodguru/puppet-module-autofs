@@ -1,0 +1,5 @@
+# Facts specified here will override the values provided by rspec-puppet-facts.
+---
+osfamily: 'RedHat'
+group: 'no_data_from_hiera'
+fqdn: 'no_data_from_hiera'
