@@ -19,15 +19,9 @@ define autofs::map (
   $mnt = $name
 
   # variable preparations and validations
-  case $mapname {
-    undef:   { $mapname_real = "mountmap_${name}" }
-    default: { $mapname_real = $mapname }
-  }
 
-  case $mappath {
-    undef:   { $mappath_real = "/etc/auto.${name}" }
-    default: { $mappath_real = $mappath }
-  }
+  $mapname_real = pick($mapname, "mountmap_${name}")
+  $mappath_real = pick($mappath, "/etc/auto.${name}")
 
   case type3x($mounts) {
     'array':  { $mounts_array = $mounts }
