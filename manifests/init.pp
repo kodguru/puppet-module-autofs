@@ -151,16 +151,6 @@ class autofs (
     require => Package['autofs'],
   }
 
-  file { 'auto.master':
-    ensure  => file,
-    path    => $autofs_auto_master_real,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('autofs/auto_master.erb'),
-    require => Package['autofs'],
-  }
-
   create_resources('autofs::map', $maps_real)
 
   service { 'autofs':
@@ -170,7 +160,41 @@ class autofs (
     require   => Package['autofs'],
     subscribe => [
       File['autofs_sysconfig'],
-      File['auto.master'],
+      Concat['auto.master'],
     ],
+  }
+
+  concat { 'auto.master':
+    ensure  => present,
+    path    => $autofs_auto_master_real,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => Package['autofs'],
+  }
+
+  concat::fragment { 'auto.master_head':
+    target  => 'auto.master',
+    content => "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n",
+    order   => '01',
+  }
+
+  case $use_dash_hosts_for_net {
+    true:    { $net = '/net -hosts' }
+    default: { $net = '/net /etc/auto.net --timeout=60' }
+  }
+
+  concat::fragment { 'auto.master_net':
+    target  => 'auto.master',
+    content => "${net}\n\n",
+    order   => '02',
+  }
+
+  if $use_nis_maps_bool {
+    concat::fragment { 'auto.master_nis_master':
+      target  => 'auto.master',
+      content => "+${nis_master_name}\n",
+      order   => '99',
+    }
   }
 }

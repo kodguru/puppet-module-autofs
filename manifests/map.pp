@@ -48,4 +48,64 @@ define autofs::map (
     source  => $file,
     content => $content,
   }
+
+  # maptype is not used on Solaris
+  case $::osfamily {
+    'Solaris': { $maptype_real = undef }
+    default:   { $maptype_real = " ${maptype}"   }
+  }
+
+  case $options {
+    undef:   { $options_real = '' }
+    default: { $options_real = " ${options}" }
+  }
+
+  # This behaviour is taken from the template in v1.5.0 of this module.
+  # When $maptype is given, $mapname is used without 'auto.' as prefix.
+  if $maptype {
+    case $mapname {
+      undef:   { $mapname_real2 = $name }
+      default: { $mapname_real2 = $mapname }
+    }
+  } else {
+    case $mapname {
+      undef:   { $mapname_real2 = "auto.${name}" }
+      default: { $mapname_real2 = $mapname }
+    }
+  }
+
+  case $mappath {
+    undef:   { $mappath_real2 = "/etc/auto.${name}" }
+    default: { $mappath_real2 = $mappath }
+  }
+
+  # build string for map, considering if maptype and format are set
+  if $mountpoint {
+    if $maptype {
+      $mount = "/${mountpoint}${maptype_real} ${mapname_real2}${options_real}"
+    }
+    elsif $manage == false {
+      $mount = "/${mountpoint} -null${options_real}"
+    }
+    else {
+      $mount = "/${mountpoint} ${mappath_real2}${options_real}"
+    }
+  }
+  else {
+    $mount = "/${name} /etc/${mapname_real2}${options_real}"
+  }
+
+  concat::fragment { "auto.master_${name}":
+    target  => 'auto.master',
+    content => "${mount}\n",
+    order   => '10',
+  }
+
+  if defined(Concat::Fragment['auto.master_linebreak']) == false {
+    concat::fragment { 'auto.master_linebreak':
+      target  => 'auto.master',
+      content => "\n",
+      order   => '98',
+    }
+  }
 }
