@@ -1,20 +1,41 @@
 require 'spec_helper'
 describe 'autofs::map' do
-  mountmap_header = "# This file is being maintained by Puppet.\n# DO NOT EDIT\n\n"
+  head = <<-END.gsub(%r{^\s+\|}, '')
+    |# This file is being maintained by Puppet.
+    |# DO NOT EDIT
+    |
+  END
+
   let(:title) { 'example' }
 
   context 'with defaults for all parameters' do
     it { is_expected.to compile.with_all_deps }
-    it {
+    it do
       is_expected.to contain_file('autofs__map_mountmap_example').only_with(
         'ensure'  => 'file',
         'path'    => '/etc/auto.example',
         'owner'   => 'root',
         'group'   => 'root',
         'mode'    => '0644',
-        'content' => mountmap_header,
+        'content' => head,
       )
-    }
+    end
+
+    it do
+      is_expected.to contain_concat__fragment('auto.master_example').only_with(
+        'target'  => 'auto.master',
+        'content' => "/example /etc/auto.example\n",
+        'order'   => '10',
+      )
+    end
+
+    it do
+      is_expected.to contain_concat__fragment('auto.master_linebreak').only_with(
+        'target'  => 'auto.master',
+        'content' => "\n",
+        'order'   => '98',
+      )
+    end
   end
 
   context 'with functional parameters set' do
@@ -22,7 +43,7 @@ describe 'autofs::map' do
       let(:params) { { mounts: ['spec srv:/path/spec', 'test srv:/path/test'] } }
 
       it {
-        is_expected.to contain_file('autofs__map_mountmap_example').with('content' => "#{mountmap_header}spec srv:/path/spec\ntest srv:/path/test\n")
+        is_expected.to contain_file('autofs__map_mountmap_example').with('content' => "#{head}spec srv:/path/spec\ntest srv:/path/test\n")
       }
     end
 
@@ -30,7 +51,7 @@ describe 'autofs::map' do
       let(:params) { { mounts: ['spectest server:/spec/test'] } }
 
       it {
-        is_expected.to contain_file('autofs__map_mountmap_example').with('content' => "#{mountmap_header}spectest server:/spec/test\n")
+        is_expected.to contain_file('autofs__map_mountmap_example').with('content' => "#{head}spectest server:/spec/test\n")
       }
     end
 
@@ -57,11 +78,11 @@ describe 'autofs::map' do
       }
     end
 
-    context 'with mapname set to valid string <testname>' do
-      let(:params) { { mapname: 'testname' } }
+    context 'with mapname set to valid string <string>' do
+      let(:params) { { mapname: 'string' } }
 
       it {
-        is_expected.to contain_file('autofs__map_testname')
+        is_expected.to contain_file('autofs__map_string')
       }
     end
   end
@@ -81,7 +102,7 @@ describe 'autofs::map' do
             'owner'   => 'root',
             'group'   => 'root',
             'mode'    => '0644',
-            'content' => mountmap_header,
+            'content' => head,
           )
         }
       end

@@ -1,6 +1,0 @@
----
-autofs::maps:
-  'auto.proj':
-    mountpoint: 'proj'
-    mappath: '/etc/auto.proj'
-    file: '/path/to/file/with/mounts'
