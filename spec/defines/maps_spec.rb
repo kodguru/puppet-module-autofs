@@ -114,29 +114,29 @@ describe 'autofs::map' do
     let(:title) { 'example' }
 
     validations = {
-      'absolute_path' => {
+      'Array' => {
+        name:    ['mounts'],
+        valid:   [['array']],
+        invalid: ['string', { 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'expects an Array',
+      },
+      'Optional[Stdlib::Absolutepath]' => {
         name:    ['mappath'],
         valid:   ['/absolute/filepath', '/absolute/directory/'],
         invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
-        message: 'is not an absolute path', # source: stdlib:validate_absolute_path
+        message: 'expects a Stdlib::Absolutepath',
       },
-      'array / string' => {
-        name:    ['mounts'],
-        valid:   [['array'], 'string'],
-        invalid: [{ 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'is not an array', # source: autofs::maps:fail
-      },
-      'string' => {
-        name:    ['mapname'],
-        valid:   ['string'],
-        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'is not a string', # source: autofs::maps:fail
-      },
-      'string for file source' => {
+      'Optional[Stdlib::Filesource]' => {
         name:    ['file'],
         valid:   ['puppet:///test', '/test/ing', 'file:///test/ing'],
         invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'is not a string', # source: autofs::maps:fail
+        message: 'expects a Stdlib::Filesource',
+      },
+      'Optional[String[1]]' => {
+        name:    ['mapname'],
+        valid:   ['string'],
+        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'expects a value of type Undef or String,',
       },
     }
 

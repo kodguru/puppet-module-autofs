@@ -141,7 +141,7 @@ describe 'autofs' do
     context 'have +auto.master disabled' do
       let(:params) do
         {
-          use_nis_maps: 'false',
+          use_nis_maps: false,
           maps: {
             'auto.home' => {
               'maptype'    => 'yp',

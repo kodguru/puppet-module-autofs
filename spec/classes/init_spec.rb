@@ -49,7 +49,7 @@ describe 'autofs' do
 
   platforms.sort.each do |osfamily, v|
     describe "with defaults for all parameters on supported OS #{osfamily}" do
-      let(:facts) { { osfamily: osfamily } }
+      let(:facts) { { os: { family: osfamily } } }
 
       it { is_expected.to compile.with_all_deps }
       it { is_expected.to contain_class('autofs') }
@@ -335,7 +335,7 @@ describe 'autofs' do
   end
 
   context 'on supported OS Solaris' do
-    let(:facts) { { osfamily: 'Solaris' } }
+    let(:facts) { { os: { family: 'Solaris' } } }
 
     context 'with use_dash_hosts_for_net set to valid value <false>' do
       let(:params) { { use_dash_hosts_for_net: false } }
@@ -671,7 +671,7 @@ describe 'autofs' do
   # TODO: Discuss and clarify the maptype function on Solaris. Currently maptype is not added to the output.
   # Tests to proof the different handling of maptype on Solaris.
   context 'with maps on Solaris (for auto.master file) set to valid value' do
-    let(:facts) { { osfamily: 'Solaris' } }
+    let(:facts) { { os: { family: 'Solaris' } } }
 
     context '<test => { mountpoint => mountpoint, maptype => nis }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis' } } } }
@@ -815,7 +815,7 @@ describe 'autofs' do
   end
 
   describe 'running on unsupported OS' do
-    let(:facts) { { osfamily: 'WierdOS' } }
+    let(:facts) { { os: { family: 'WierdOS' } } }
 
     it 'fails' do
       expect {
@@ -826,50 +826,66 @@ describe 'autofs' do
 
   describe 'variable type and content validations' do
     # set needed custom facts and variables
-    let(:facts) { { group: 'data_from_hiera_group' } }
+    let(:facts) do
+      {
+        group: 'data_from_hiera_group',
+      }
+    end
 
     validations = {
-      'absolute_path' => {
-        name:    ['autofs_sysconfig', 'autofs_auto_master'],
-        valid:   ['/absolute/filepath', '/absolute/directory/'],
-        invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
-        message: 'is not an absolute path', # source: stdlib:validate_absolute_path
-      },
-      'boolean / stringified boolean' => {
+      'Boolean' => {
         name:    ['maps_hiera_merge', 'use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
-        valid:   [true, 'true', false, 'false'],
-        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
-        message: '(is not a boolean|Unknown type of boolean)', # source: (autofs:fail|stdlib:str2bool)
+        valid:   [true, false],
+        invalid: ['false', 'string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
+        message: 'expects a Boolean',
       },
-      'hash' => {
-        name:    ['maps'],
-        valid:   [], # Valid hashes are too complex to test them easily here. They should have their own tests anyway.
-        invalid: ['string', ['array'], 3, 2.42, false],
-        message: 'is not a hash', # source: autofs:fail
+      'Enum[YES, NO]' => {
+        name:    ['browse_mode'],
+        valid:   ['YES', 'NO'],
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'expects a match for Enum',
       },
-      'integer / stringified integer' => {
-        name:    ['timeout', 'negative_timeout', 'mount_wait', 'umount_wait', 'mount_nfs_default_protocol'],
-        valid:   [3, '3'],
-        invalid: ['string', ['array'], { 'ha' => 'sh' }, 2.42, false],
-        message: '(is not an integer|is not a number|cannot be converted to Numeric)', # source: (autofs:fail|Puppet 3 internal|Puppet >= 4 internal)
-      },
-      'string' => {
-        name:    ['browse_mode', 'append_options', 'autofs_package', 'autofs_service', 'nis_master_name'],
-        valid:   ['string'],
-        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'is not a string', # source: autofs:fail
-      },
-      'string for logging' => {
+      'Enum[none, verbose, debug]' => {
         name:    ['logging'],
         valid:   ['none', 'verbose', 'debug'],
         invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: '(input needs to be a String|must be none, verbose or debug)', # source: stdlib5:(internal|:message)
+        message: 'expects a match for Enum',
       },
-      'string for service ensure' => {
+      'Enum[yes, no]' => {
+        name:    ['append_options'],
+        valid:   ['yes', 'no'],
+        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: 'expects a match for Enum',
+      },
+      'Hash' => {
+        name:    ['maps'],
+        valid:   [], # Valid hashes are too complex to test them easily here. They should have their own tests anyway.
+        invalid: ['string', ['array'], 3, 2.42, false],
+        message: 'expects a Hash value',
+      },
+      'Integer' => {
+        name:    ['timeout', 'negative_timeout', 'mount_wait', 'umount_wait', 'mount_nfs_default_protocol'],
+        valid:   [3],
+        invalid: ['3', 'string', ['array'], { 'ha' => 'sh' }, 2.42, false],
+        message: 'expects an Integer',
+      },
+      'Optional[Stdlib::Absolutepath]' => {
+        name:    ['autofs_sysconfig', 'autofs_auto_master'],
+        valid:   ['/absolute/filepath', '/absolute/directory/'],
+        invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
+        message: 'expects a Stdlib::Absolutepath',
+      },
+      'Optional[String[1]]' => {
+        name:    ['autofs_package', 'autofs_service', 'nis_master_name'],
+        valid:   ['string'],
+        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: '(expects a String value|value of type Undef or String)',
+      },
+      'Stdlib::Ensure::Service' => {
         name:    ['service_ensure'],
         valid:   ['stopped', 'running'],
         invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: '(input needs to be a String|must be running or stopped)', # source: stdlib5:(internal|:message)
+        message: 'Enum\[\'running\', \'stopped\'\]',
       },
     }
 
