@@ -703,23 +703,23 @@ describe 'autofs' do
         invalid: ['3', 'string', ['array'], { 'ha' => 'sh' }, 2.42, false],
         message: 'expects an Integer',
       },
-      'Optional[Stdlib::Absolutepath]' => {
+      'Stdlib::Absolutepath' => {
         name:    ['autofs_sysconfig', 'autofs_auto_master'],
         valid:   ['/absolute/filepath', '/absolute/directory/'],
         invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
         message: 'expects a Stdlib::Absolutepath',
-      },
-      'Optional[String[1]]' => {
-        name:    ['autofs_package', 'autofs_service', 'nis_master_name'],
-        valid:   ['string'],
-        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: '(expects a String value|value of type Undef or String)',
       },
       'Stdlib::Ensure::Service' => {
         name:    ['service_ensure'],
         valid:   ['stopped', 'running'],
         invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
         message: 'Enum\[\'running\', \'stopped\'\]',
+      },
+      'String[1]' => {
+        name:    ['autofs_package', 'autofs_service', 'nis_master_name'],
+        valid:   ['string'],
+        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+        message: '(expects a String value|value of type Undef or String)',
       },
     }
 

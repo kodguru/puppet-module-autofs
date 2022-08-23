@@ -58,70 +58,46 @@
 #   Value for the service enable attribute.
 #
 class autofs (
-  Enum['YES', 'NO'] $browse_mode                     = 'NO',
-  Integer[0] $timeout                                = 600,
-  Integer[0] $negative_timeout                       = 60,
-  Integer $mount_wait                                = -1,
-  Integer[0] $umount_wait                            = 12,
-  Integer[0] $mount_nfs_default_protocol             = 4,
-  Enum['yes', 'no'] $append_options                  = 'yes',
-  Enum['none', 'verbose', 'debug'] $logging          = 'none',
-  Hash $maps                                         = {},
-  Boolean $maps_hiera_merge                          = false,
-  Optional[String[1]] $autofs_package                = undef,
-  Optional[Stdlib::Absolutepath] $autofs_sysconfig   = undef,
-  String[1] $autofs_service                          = 'autofs',
-  Optional[Stdlib::Absolutepath] $autofs_auto_master = undef,
-  Boolean $use_nis_maps                              = true,
-  Boolean $use_dash_hosts_for_net                    = true,
-  String[1] $nis_master_name                         = 'auto.master',
-  Stdlib::Ensure::Service $service_ensure            = 'running',
-  Boolean $service_enable                            = true,
+  Enum['YES', 'NO'] $browse_mode            = 'NO',
+  Integer[0] $timeout                       = 600,
+  Integer[0] $negative_timeout              = 60,
+  Integer $mount_wait                       = -1,
+  Integer[0] $umount_wait                   = 12,
+  Integer[0] $mount_nfs_default_protocol    = 4,
+  Enum['yes', 'no'] $append_options         = 'yes',
+  Enum['none', 'verbose', 'debug'] $logging = 'none',
+  Hash $maps                                = {},
+  Boolean $maps_hiera_merge                 = false,
+  String[1] $autofs_package                 = 'autofs',
+  Stdlib::Absolutepath $autofs_sysconfig    = '/etc/sysconfig/autofs',
+  String[1] $autofs_service                 = 'autofs',
+  Stdlib::Absolutepath $autofs_auto_master  = '/etc/auto.master',
+  Boolean $use_nis_maps                     = true,
+  Boolean $use_dash_hosts_for_net           = true,
+  String[1] $nis_master_name                = 'auto.master',
+  Stdlib::Ensure::Service $service_ensure   = 'running',
+  Boolean $service_enable                   = true,
 ) {
-  # system specific default values
-  case $facts['os']['family'] {
-    'RedHat': {
-      $autofs_package_default     = 'autofs'
-      $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
-      $autofs_auto_master_default = '/etc/auto.master'
-      $autofs_sysconfig_template  = 'autofs/autofs_linux.erb'
-    }
-    'Suse': {
-      $autofs_package_default     = 'autofs'
-      $autofs_sysconfig_default   = '/etc/sysconfig/autofs'
-      $autofs_auto_master_default = '/etc/auto.master'
-      $autofs_sysconfig_template  = 'autofs/autofs_linux.erb'
-    }
-    'Debian': {
-      $autofs_package_default     = 'autofs'
-      $autofs_sysconfig_default   = '/etc/default/autofs'
-      $autofs_auto_master_default = '/etc/auto.master'
-      $autofs_sysconfig_template  = 'autofs/autofs_linux.erb'
-    }
-    default: {
-      fail("Operating system family ${facts['os']['family']} is not supported")
-    }
-  }
-
   # variable preparations
-  $autofs_package_real     = pick($autofs_package, $autofs_package_default)
-  $autofs_sysconfig_real   = pick($autofs_sysconfig, $autofs_sysconfig_default)
-  $autofs_auto_master_real = pick($autofs_auto_master, $autofs_auto_master_default)
-
   case $maps_hiera_merge {
     true:    { $maps_real = hiera_hash('autofs::maps', {}) }
     default: { $maps_real = $maps }
   }
 
   # functionality
+  case $facts['os']['family'] {
+    'RedHat', 'Suse', 'Debian': {}
+    default: { fail("Operating system family ${facts['os']['family']} is not supported") }
+  }
+
   package { 'autofs':
     ensure => installed,
-    name   => $autofs_package_real,
+    name   => $autofs_package,
   }
 
   file { 'autofs_sysconfig':
     ensure  => file,
-    path    => $autofs_sysconfig_real,
+    path    => $autofs_sysconfig,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
@@ -144,7 +120,7 @@ class autofs (
 
   concat { 'auto.master':
     ensure  => present,
-    path    => $autofs_auto_master_real,
+    path    => $autofs_auto_master,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
