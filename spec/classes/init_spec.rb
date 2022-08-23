@@ -23,13 +23,6 @@ describe 'autofs' do
         autofs_sysconfig_fixture: 'files/autofs.linux',
         autofs_auto_master:       '/etc/auto.master',
       },
-    'Solaris' =>
-      {
-        autofs_package:           'SUNWatfsr',
-        autofs_sysconfig:         '/etc/default/autofs',
-        autofs_sysconfig_fixture: 'files/autofs.solaris',
-        autofs_auto_master:       '/etc/auto_master',
-      },
   }
 
   head = <<-END.gsub(%r{^\s+\|}, '')
@@ -331,19 +324,6 @@ describe 'autofs' do
       let(:params) { { service_enable: false } }
 
       it { is_expected.to contain_service('autofs').with_enable('false') }
-    end
-  end
-
-  context 'on supported OS Solaris' do
-    let(:facts) { { os: { family: 'Solaris' } } }
-
-    context 'with use_dash_hosts_for_net set to valid value <false>' do
-      let(:params) { { use_dash_hosts_for_net: false } }
-
-      it { is_expected.to contain_concat('auto.master') }
-      it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
-      it { is_expected.to contain_concat__fragment('auto.master_net').with_content("/net /etc/auto.net --timeout=60\n\n") }
-      it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
   end
 
@@ -665,152 +645,6 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_test5') }
       it { is_expected.to contain_concat__fragment('auto.master_test6') }
       it { is_expected.to contain_concat__fragment('auto.master_test7') }
-    end
-  end
-
-  # TODO: Discuss and clarify the maptype function on Solaris. Currently maptype is not added to the output.
-  # Tests to proof the different handling of maptype on Solaris.
-  context 'with maps on Solaris (for auto.master file) set to valid value' do
-    let(:facts) { { os: { family: 'Solaris' } } }
-
-    context '<test => { mountpoint => mountpoint, maptype => nis }>' do
-      let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis' } } } }
-
-      it do
-        is_expected.to contain_autofs__map('test').only_with(
-          'manage'     => true,
-          'maptype'    => 'nis',
-          'mountpoint' => 'mountpoint',
-          'mounts'     => [],
-          'name'       => 'test',
-        )
-      end
-
-      it { is_expected.to have_autofs__map_resource_count(1) }
-    end
-
-    context '<test => { mountpoint => mountpoint, maptype => nis, manage => false }> maptype overrides manage' do
-      let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis', 'manage' => false } } } }
-
-      it do
-        is_expected.to contain_autofs__map('test').only_with(
-          'manage'     => false,
-          'maptype'    => 'nis',
-          'mountpoint' => 'mountpoint',
-          'mounts'     => [],
-          'name'       => 'test',
-        )
-      end
-
-      it { is_expected.to have_autofs__map_resource_count(1) }
-      it { is_expected.to contain_concat('auto.master') }
-      it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
-      it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
-      it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
-    end
-
-    # same test as above with options set
-    context '<test => { mountpoint => mountpoint, maptype => nis, options => ro }>' do
-      let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis', 'options' => 'ro' } } } }
-
-      it do
-        is_expected.to contain_autofs__map('test').only_with(
-          'manage'     => true,
-          'maptype'    => 'nis',
-          'mountpoint' => 'mountpoint',
-          'mounts'     => [],
-          'name'       => 'test',
-          'options'    => 'ro',
-        )
-      end
-    end
-
-    context 'which manage seven mounts' do
-      let(:params) do
-        {
-          maps: {
-            'test1' => {},
-            'test2' => { 'mountpoint' => 'mountpoint2' },
-            'test3' => { 'mountpoint' => 'mountpoint3', 'options' => 'ro' },
-            'test4' => { 'mountpoint' => 'mountpoint4', 'maptype' => 'nis' },
-            'test5' => { 'mountpoint' => 'mountpoint5', 'manage' => false },
-            'test6' => { 'mountpoint' => 'mountpoint6', 'mappath' => '/etc/auto.testing' },
-            'test7' => { 'mountpoint' => 'mountpoint7', 'maptype' => 'nis', 'mapname' => 'auto.test' },
-          },
-        }
-      end
-
-      it do
-        is_expected.to contain_autofs__map('test1').only_with(
-          'manage'     => true,
-          'mounts'     => [],
-          'name'       => 'test1',
-        )
-      end
-
-      it do
-        is_expected.to contain_autofs__map('test2').only_with(
-          'manage'     => true,
-          'mountpoint' => 'mountpoint2',
-          'mounts'     => [],
-          'name'       => 'test2',
-        )
-      end
-
-      it do
-        is_expected.to contain_autofs__map('test3').only_with(
-          'manage'     => true,
-          'mountpoint' => 'mountpoint3',
-          'mounts'     => [],
-          'name'       => 'test3',
-          'options'    => 'ro',
-        )
-      end
-
-      it do
-        is_expected.to contain_autofs__map('test4').only_with(
-          'name'       => 'test4',
-          'manage'     => true,
-          'mountpoint' => 'mountpoint4',
-          'maptype'    => 'nis',
-          'mounts'     => [],
-        )
-      end
-
-      it do
-        is_expected.to contain_autofs__map('test5').only_with(
-          'name'       => 'test5',
-          'manage'     => false,
-          'mountpoint' => 'mountpoint5',
-          'mounts'     => [],
-        )
-      end
-
-      it do
-        is_expected.to contain_autofs__map('test6').only_with(
-          'name'       => 'test6',
-          'manage'     => true,
-          'mountpoint' => 'mountpoint6',
-          'mappath'    => '/etc/auto.testing',
-          'mounts'     => [],
-        )
-      end
-
-      it do
-        is_expected.to contain_autofs__map('test7').only_with(
-          'name'       => 'test7',
-          'manage'     => true,
-          'mountpoint' => 'mountpoint7',
-          'maptype'    => 'nis',
-          'mapname'    => 'auto.test',
-          'mounts'     => [],
-        )
-      end
-
-      it { is_expected.to contain_concat('auto.master') }
-      it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
-      it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
-      it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
   end
 

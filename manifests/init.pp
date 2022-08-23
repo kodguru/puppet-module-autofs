@@ -98,12 +98,6 @@ class autofs (
       $autofs_auto_master_default = '/etc/auto.master'
       $autofs_sysconfig_template  = 'autofs/autofs_linux.erb'
     }
-    'Solaris': {
-      $autofs_package_default     = 'SUNWatfsr'
-      $autofs_sysconfig_default   = '/etc/default/autofs'
-      $autofs_auto_master_default = '/etc/auto_master'
-      $autofs_sysconfig_template  = 'autofs/autofs_solaris.erb'
-    }
     default: {
       fail("Operating system family ${facts['os']['family']} is not supported")
     }
@@ -131,7 +125,7 @@ class autofs (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template($autofs_sysconfig_template),
+    content => template('autofs/autofs_linux.erb'),
     require => Package['autofs'],
   }
 

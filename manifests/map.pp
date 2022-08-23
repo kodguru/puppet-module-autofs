@@ -91,12 +91,6 @@ define autofs::map (
     content => $content,
   }
 
-  # maptype is not used on Solaris
-  case $facts['os']['family'] {
-    'Solaris': { $maptype_real = undef }
-    default:   { $maptype_real = " ${maptype}" }
-  }
-
   case $options {
     undef:   { $options_real = '' }
     default: { $options_real = " ${options}" }
@@ -124,7 +118,7 @@ define autofs::map (
   # build string for map, considering if maptype and format are set
   if $mountpoint {
     if $maptype {
-      $mount = "/${mountpoint}${maptype_real} ${mapname_real2}${options_real}"
+      $mount = "/${mountpoint} ${maptype} ${mapname_real2}${options_real}"
     }
     elsif $manage == false {
       $mount = "/${mountpoint} -null${options_real}"
