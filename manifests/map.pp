@@ -75,16 +75,6 @@ define autofs::map (
   $mapname_real = pick($mapname, "mountmap_${name}")
   $mappath_real = pick($mappath, "/etc/auto.${name}")
 
-  case type3x($mounts) {
-    'array':  { $mounts_array = $mounts }
-    'string': { $mounts_array = [$mounts] }
-    default:  { fail('autofs::map::mounts is not an array.') }
-  }
-
-  if is_string($file)         == false { fail('autofs::map::file is not a string.') }
-  if is_string($mapname_real) == false { fail('autofs::map::mapname is not a string.') }
-  if is_absolute_path($mappath_real) == false { fail('autofs::map::mappath is not an absolute path.') }
-
   # functionality
   $content = $file ? {
     undef   => template('autofs/mountmap.erb'),

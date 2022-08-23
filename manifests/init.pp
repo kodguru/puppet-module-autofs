@@ -114,81 +114,12 @@ class autofs (
   $autofs_sysconfig_real   = pick($autofs_sysconfig, $autofs_sysconfig_default)
   $autofs_auto_master_real = pick($autofs_auto_master, $autofs_auto_master_default)
 
-  case type3x($timeout) {
-    'integer': { $timeout_int = $timeout }
-    'string':  { $timeout_int = $timeout + 0 }
-    default:   { fail('autofs::timeout is not an integer.') }
-  }
-
-  case type3x($negative_timeout) {
-    'integer': { $negative_timeout_int = $negative_timeout }
-    'string':  { $negative_timeout_int = $negative_timeout + 0 }
-    default:   { fail('autofs::negative_timeout is not an integer.') }
-  }
-
-  case type3x($mount_wait) {
-    'integer': { $mount_wait_int = $mount_wait }
-    'string':  { $mount_wait_int = $mount_wait + 0 }
-    default:   { fail('autofs::mount_wait is not an integer.') }
-  }
-
-  case type3x($umount_wait) {
-    'integer': { $umount_wait_int = $umount_wait }
-    'string':  { $umount_wait_int = $umount_wait + 0 }
-    default:   { fail('autofs::umount_wait is not an integer.') }
-  }
-
-  case type3x($mount_nfs_default_protocol) {
-    'integer': { $mount_nfs_default_protocol_int = $mount_nfs_default_protocol }
-    'string':  { $mount_nfs_default_protocol_int = $mount_nfs_default_protocol + 0 }
-    default:   { fail('autofs::mount_nfs_default_protocol is not an integer.') }
-  }
-
-  case type3x($use_nis_maps) {
-    'string':  { $use_nis_maps_bool = str2bool($use_nis_maps) }
-    'boolean': { $use_nis_maps_bool = $use_nis_maps }
-    default:   { fail('autofs::use_nis_maps is not a boolean.') }
-  }
-
-  case type3x($maps_hiera_merge) {
-    'string':  { $maps_hiera_merge_bool = str2bool($maps_hiera_merge) }
-    'boolean': { $maps_hiera_merge_bool = $maps_hiera_merge }
-    default:   { fail('autofs::maps_hiera_merge is not a boolean.') }
-  }
-
-  case type3x($use_dash_hosts_for_net) {
-    'string':  { $use_dash_hosts_for_net_bool = str2bool($use_dash_hosts_for_net) }
-    'boolean': { $use_dash_hosts_for_net_bool = $use_dash_hosts_for_net }
-    default:   { fail('autofs::use_dash_hosts_for_net is not a boolean.') }
-  }
-
-  case type3x($service_enable) {
-    'string':  { $service_enable_bool = str2bool($service_enable) }
-    'boolean': { $service_enable_bool = $service_enable }
-    default:   { fail('autofs::service_enable is not a boolean.') }
-  }
-
-  case $maps_hiera_merge_bool {
+  case $maps_hiera_merge {
     true:    { $maps_real = hiera_hash('autofs::maps', {}) }
     default: { $maps_real = $maps }
   }
 
-  # variable validations
-  if is_string($browse_mode)         == false { fail('autofs::browse_mode is not a string.') }
-  if is_string($append_options)      == false { fail('autofs::append_options is not a string.') }
-  if is_string($autofs_package_real) == false { fail('autofs::autofs_package is not a string.') }
-  if is_string($autofs_service)      == false { fail('autofs::autofs_service is not a string.') }
-  if is_string($nis_master_name)     == false { fail('autofs::nis_master_name is not a string.') }
-  if is_hash($maps)                  == false { fail('autofs::maps is not a hash.') }
-
-  validate_re($service_ensure, '^(running|stopped)$', "service_ensure must be running or stopped, got ${service_ensure}")
-  validate_re($logging, '^(none|verbose|debug)$', "service_ensure must be none, verbose or debug, got ${service_ensure}")
-
-  validate_absolute_path(
-    $autofs_sysconfig_real,
-    $autofs_auto_master_real,
-  )
-
+  # functionality
   package { 'autofs':
     ensure => installed,
     name   => $autofs_package_real,
@@ -209,7 +140,7 @@ class autofs (
   service { 'autofs':
     ensure    => $service_ensure,
     name      => $autofs_service,
-    enable    => $service_enable_bool,
+    enable    => $service_enable,
     require   => Package['autofs'],
     subscribe => [
       File['autofs_sysconfig'],
@@ -243,7 +174,7 @@ class autofs (
     order   => '02',
   }
 
-  if $use_nis_maps_bool {
+  if $use_nis_maps {
     concat::fragment { 'auto.master_nis_master':
       target  => 'auto.master',
       content => "+${nis_master_name}\n",
