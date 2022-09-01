@@ -1,30 +1,5 @@
 require 'spec_helper'
-
 describe 'autofs' do
-  platforms = {
-    'RedHat' =>
-      {
-        autofs_package:           'autofs',
-        autofs_sysconfig:         '/etc/sysconfig/autofs',
-        autofs_sysconfig_fixture: 'files/autofs.linux',
-        autofs_auto_master:       '/etc/auto.master',
-      },
-    'Suse' =>
-      {
-        autofs_package:           'autofs',
-        autofs_sysconfig:         '/etc/sysconfig/autofs',
-        autofs_sysconfig_fixture: 'files/autofs.linux',
-        autofs_auto_master:       '/etc/auto.master',
-      },
-    'Debian' =>
-      {
-        autofs_package:           'autofs',
-        autofs_sysconfig:         '/etc/default/autofs',
-        autofs_sysconfig_fixture: 'files/autofs.linux',
-        autofs_auto_master:       '/etc/auto.master',
-      },
-  }
-
   head = <<-END.gsub(%r{^\s+\|}, '')
     |# This file is being maintained by Puppet.
     |# DO NOT EDIT
@@ -40,9 +15,15 @@ describe 'autofs' do
     |+auto.master
   END
 
-  platforms.sort.each do |osfamily, v|
-    describe "with defaults for all parameters on supported OS #{osfamily}" do
-      let(:facts) { { os: { family: osfamily } } }
+  on_supported_os.sort.each do |os, os_facts|
+    autofs_sysconfig = if os_facts[:os]['name'] == 'Debian'
+                         '/etc/default/autofs'
+                       else
+                         '/etc/sysconfig/autofs'
+                       end
+
+    describe "on #{os} with default values for parameters" do
+      let(:facts) { os_facts }
 
       it { is_expected.to compile.with_all_deps }
       it { is_expected.to contain_class('autofs') }
@@ -50,19 +31,19 @@ describe 'autofs' do
       it do
         is_expected.to contain_package('autofs').only_with(
           'ensure' => 'installed',
-          'name'   => v[:autofs_package],
+          'name'   => 'autofs',
         )
       end
 
       it do
         is_expected.to contain_file('autofs_sysconfig').only_with(
           'ensure'  => 'file',
-          'path'    => v[:autofs_sysconfig],
+          'path'    => autofs_sysconfig,
           'owner'   => 'root',
           'group'   => 'root',
           'mode'    => '0644',
           'require' => 'Package[autofs]',
-          'content' => File.read(fixtures(v[:autofs_sysconfig_fixture])),
+          'content' => File.read(fixtures('files/autofs.linux')),
         )
       end
 
@@ -81,7 +62,7 @@ describe 'autofs' do
       it do
         is_expected.to contain_concat('auto.master').with(
           'ensure'  => 'present',
-          'path'    => v[:autofs_auto_master],
+          'path'    => '/etc/auto.master',
           'owner'   => 'root',
           'group'   => 'root',
           'mode'    => '0644',
@@ -115,102 +96,76 @@ describe 'autofs' do
     end
   end
 
-  context 'on supported OS RedHat' do
-    context 'with browse_mode set to valid value <YES>' do
-      let(:params) { { browse_mode: 'YES' } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^BROWSE_MODE=\"YES\"$}) }
-    end
-
-    context 'with timeout set to valid value <242>' do
-      let(:params) { { timeout: 242 } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^TIMEOUT=242$}) }
-    end
-
-    context 'with negative_timeout set to valid value <242>' do
-      let(:params) { { negative_timeout: 242 } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^NEGATIVE_TIMEOUT=242$}) }
-    end
-
-    context 'with mount_wait set to valid value <242>' do
-      let(:params) { { mount_wait: 242 } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_WAIT=242$}) }
-    end
-
-    context 'with umount_wait set to valid value <242>' do
-      let(:params) { { umount_wait: 242 } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^UMOUNT_WAIT=242$}) }
-    end
-
-    context 'with mount_nfs_default_protocol set to valid value <3>' do
-      let(:params) { { mount_nfs_default_protocol: 3 } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_NFS_DEFAULT_PROTOCOL=3$}) }
-    end
-
-    context 'with append_options set to valid value <no>' do
-      let(:params) { { append_options: 'no' } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^APPEND_OPTIONS=\"no\"$}) }
-    end
-
-    context 'with logging set to valid value <verbose>' do
-      let(:params) { { logging: 'verbose' } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^LOGGING=\"verbose\"$}) }
-    end
-
-    context "with maps set to valid value <{'home'=>{'mountpoint'=>'home','mounts'=>['spec nfsserver:/path/to/spec','test nfsserver:/path/to/test']}}>" do
-      let(:params) { { maps: { 'home' => { 'mountpoint' => 'home', 'mounts' => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'] } } } }
-
-      it { is_expected.to have_autofs__map_resource_count(1) }
-      it do
-        is_expected.to contain_autofs__map('home').only_with(
-          'mountpoint' => 'home',
-          'mounts'     => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'],
-          'manage'     => true,
-        )
-      end
-
-      it { is_expected.to contain_concat('auto.master') }
-      it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
-      it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
-      it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
-
-      # from autofs::map, here to reach high resource coverage
-      it { is_expected.to contain_file('autofs__map_mountmap_home') }
-      it { is_expected.to contain_concat__fragment('auto.master_home') }
-      it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
-    end
-
-    describe 'with maps_hiera_merge' do
-      let(:facts) do
+  describe 'on supported OS' do
+    # The following tests are OS independent, so we only test one supported OS
+    redhat = {
+      supported_os: [
         {
-          fqdn:     'data.from.hiera.fqdn',
-          group:    'data_from_hiera_group',
-        }
+          'operatingsystem'        => 'RedHat',
+          'operatingsystemrelease' => ['7'],
+        },
+      ],
+    }
+
+    on_supported_os(redhat).each do |_os, os_facts|
+      let(:facts) { os_facts }
+
+      context 'with browse_mode set to valid value <YES>' do
+        let(:params) { { browse_mode: 'YES' } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^BROWSE_MODE=\"YES\"$}) }
       end
 
-      context 'set to valid value <false>' do
-        let(:params) { { maps_hiera_merge: false } }
+      context 'with timeout set to valid value <242>' do
+        let(:params) { { timeout: 242 } }
 
-        it { is_expected.to have_autofs__map_resource_count(2) }
-        it do
-          is_expected.to contain_autofs__map('group').only_with(
-            'mountpoint' => 'from_hiera_fqdn',
-            'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
-            'manage'     => true,
-          )
-        end
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^TIMEOUT=242$}) }
+      end
 
+      context 'with negative_timeout set to valid value <242>' do
+        let(:params) { { negative_timeout: 242 } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^NEGATIVE_TIMEOUT=242$}) }
+      end
+
+      context 'with mount_wait set to valid value <242>' do
+        let(:params) { { mount_wait: 242 } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_WAIT=242$}) }
+      end
+
+      context 'with umount_wait set to valid value <242>' do
+        let(:params) { { umount_wait: 242 } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^UMOUNT_WAIT=242$}) }
+      end
+
+      context 'with mount_nfs_default_protocol set to valid value <3>' do
+        let(:params) { { mount_nfs_default_protocol: 3 } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^MOUNT_NFS_DEFAULT_PROTOCOL=3$}) }
+      end
+
+      context 'with append_options set to valid value <no>' do
+        let(:params) { { append_options: 'no' } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^APPEND_OPTIONS=\"no\"$}) }
+      end
+
+      context 'with logging set to valid value <verbose>' do
+        let(:params) { { logging: 'verbose' } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_content(%r{^LOGGING=\"verbose\"$}) }
+      end
+
+      context "with maps set to valid value <{'home'=>{'mountpoint'=>'home','mounts'=>['spec nfsserver:/path/to/spec','test nfsserver:/path/to/test']}}>" do
+        let(:params) { { maps: { 'home' => { 'mountpoint' => 'home', 'mounts' => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'] } } } }
+
+        it { is_expected.to have_autofs__map_resource_count(1) }
         it do
-          is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
+          is_expected.to contain_autofs__map('home').only_with(
             'mountpoint' => 'home',
-            'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+            'mounts'     => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'],
             'manage'     => true,
           )
         end
@@ -221,114 +176,152 @@ describe 'autofs' do
         it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
 
         # from autofs::map, here to reach high resource coverage
-        it { is_expected.to contain_file('autofs__map_mountmap_group') }
-        it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_fqdn') }
-        it { is_expected.to contain_concat__fragment('auto.master_group') }
-        it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_fqdn') }
+        it { is_expected.to contain_file('autofs__map_mountmap_home') }
+        it { is_expected.to contain_concat__fragment('auto.master_home') }
         it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
       end
 
-      context 'set to valid value <true>' do
-        let(:params) { { maps_hiera_merge: true } }
-
-        it { is_expected.to have_autofs__map_resource_count(3) }
-        it do
-          is_expected.to contain_autofs__map('group').only_with(
-            'mountpoint' => 'from_hiera_fqdn',
-            'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
-            'manage'     => true,
-          )
+      describe 'with maps_hiera_merge' do
+        let(:facts) do
+          {
+            fqdn:     'data.from.hiera.fqdn',
+            group:    'data_from_hiera_group',
+          }
         end
 
-        it do
-          is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
-            'mountpoint' => 'home',
-            'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
-            'manage'     => true,
-          )
+        context 'set to valid value <false>' do
+          let(:params) { { maps_hiera_merge: false } }
+
+          it { is_expected.to have_autofs__map_resource_count(2) }
+          it do
+            is_expected.to contain_autofs__map('group').only_with(
+              'mountpoint' => 'from_hiera_fqdn',
+              'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
+              'manage'     => true,
+            )
+          end
+
+          it do
+            is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
+              'mountpoint' => 'home',
+              'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+              'manage'     => true,
+            )
+          end
+
+          it { is_expected.to contain_concat('auto.master') }
+          it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
+          it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
+          it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
+
+          # from autofs::map, here to reach high resource coverage
+          it { is_expected.to contain_file('autofs__map_mountmap_group') }
+          it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_fqdn') }
+          it { is_expected.to contain_concat__fragment('auto.master_group') }
+          it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_fqdn') }
+          it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
         end
 
-        it do
-          is_expected.to contain_autofs__map('home_from_hiera_group').only_with(
-            'mountpoint' => 'home',
-            'mounts'     => ['home nfsserver:/home/from/hiera/group'],
-            'manage'     => true,
-          )
+        context 'set to valid value <true>' do
+          let(:params) { { maps_hiera_merge: true } }
+
+          it { is_expected.to have_autofs__map_resource_count(3) }
+          it do
+            is_expected.to contain_autofs__map('group').only_with(
+              'mountpoint' => 'from_hiera_fqdn',
+              'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
+              'manage'     => true,
+            )
+          end
+
+          it do
+            is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
+              'mountpoint' => 'home',
+              'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
+              'manage'     => true,
+            )
+          end
+
+          it do
+            is_expected.to contain_autofs__map('home_from_hiera_group').only_with(
+              'mountpoint' => 'home',
+              'mounts'     => ['home nfsserver:/home/from/hiera/group'],
+              'manage'     => true,
+            )
+          end
+
+          it { is_expected.to contain_concat('auto.master') }
+          it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
+          it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
+          it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
+
+          # from autofs::map, here to reach high resource coverage
+          it { is_expected.to contain_file('autofs__map_mountmap_group') }
+          it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_fqdn') }
+          it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_group') }
+          it { is_expected.to contain_concat__fragment('auto.master_group') }
+          it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_fqdn') }
+          it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_group') }
+          it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
         end
+      end
 
-        it { is_expected.to contain_concat('auto.master') }
-        it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
-        it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
-        it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
+      context 'with autofs_package set to valid value <bikefs>' do
+        let(:params) { { autofs_package: 'bikefs' } }
 
-        # from autofs::map, here to reach high resource coverage
-        it { is_expected.to contain_file('autofs__map_mountmap_group') }
-        it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_fqdn') }
-        it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_group') }
-        it { is_expected.to contain_concat__fragment('auto.master_group') }
-        it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_fqdn') }
-        it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_group') }
-        it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
+        it { is_expected.to contain_package('autofs').with_name('bikefs') }
+      end
+
+      context 'with autofs_sysconfig set to valid value </etc/testing/autofs>' do
+        let(:params) { { autofs_sysconfig: '/etc/testing/autofs' } }
+
+        it { is_expected.to contain_file('autofs_sysconfig').with_path('/etc/testing/autofs') }
+      end
+
+      context 'with autofs_service set to valid value <testing>' do
+        let(:params) { { autofs_service: 'testing' } }
+
+        it { is_expected.to contain_service('autofs').with_name('testing') }
+      end
+
+      context 'with autofs_auto_master set to valid value </etc/bike.master>' do
+        let(:params) { { autofs_auto_master: '/etc/bike.master' } }
+
+        it { is_expected.to contain_concat('auto.master').with_path('/etc/bike.master') }
+      end
+
+      context 'with use_nis_maps set to valid value <false>' do
+        let(:params) { { use_nis_maps: false } }
+
+        it { is_expected.not_to contain_concat__fragment('auto.master_nis_master') }
+      end
+
+      context 'with use_dash_hosts_for_net set to valid value <false>' do
+        let(:params) { { use_dash_hosts_for_net: false } }
+
+        it { is_expected.to contain_concat__fragment('auto.master_net').with_content("/net /etc/auto.net --timeout=60\n\n") }
+      end
+
+      context 'with nis_master_name set to valid value <bike.meister>' do
+        let(:params) { { nis_master_name: 'bike.meister' } }
+
+        it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content("+bike.meister\n") }
+      end
+
+      context 'with service_ensure set to valid value <stopped>' do
+        let(:params) { { service_ensure: 'stopped' } }
+
+        it { is_expected.to contain_service('autofs').with_ensure('stopped') }
+      end
+
+      context 'with service_enable set to valid value <false>' do
+        let(:params) { { service_enable: false } }
+
+        it { is_expected.to contain_service('autofs').with_enable('false') }
       end
     end
 
-    context 'with autofs_package set to valid value <bikefs>' do
-      let(:params) { { autofs_package: 'bikefs' } }
-
-      it { is_expected.to contain_package('autofs').with_name('bikefs') }
-    end
-
-    context 'with autofs_sysconfig set to valid value </etc/testing/autofs>' do
-      let(:params) { { autofs_sysconfig: '/etc/testing/autofs' } }
-
-      it { is_expected.to contain_file('autofs_sysconfig').with_path('/etc/testing/autofs') }
-    end
-
-    context 'with autofs_service set to valid value <testing>' do
-      let(:params) { { autofs_service: 'testing' } }
-
-      it { is_expected.to contain_service('autofs').with_name('testing') }
-    end
-
-    context 'with autofs_auto_master set to valid value </etc/bike.master>' do
-      let(:params) { { autofs_auto_master: '/etc/bike.master' } }
-
-      it { is_expected.to contain_concat('auto.master').with_path('/etc/bike.master') }
-    end
-
-    context 'with use_nis_maps set to valid value <false>' do
-      let(:params) { { use_nis_maps: false } }
-
-      it { is_expected.not_to contain_concat__fragment('auto.master_nis_master') }
-    end
-
-    context 'with use_dash_hosts_for_net set to valid value <false>' do
-      let(:params) { { use_dash_hosts_for_net: false } }
-
-      it { is_expected.to contain_concat__fragment('auto.master_net').with_content("/net /etc/auto.net --timeout=60\n\n") }
-    end
-
-    context 'with nis_master_name set to valid value <bike.meister>' do
-      let(:params) { { nis_master_name: 'bike.meister' } }
-
-      it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content("+bike.meister\n") }
-    end
-
-    context 'with service_ensure set to valid value <stopped>' do
-      let(:params) { { service_ensure: 'stopped' } }
-
-      it { is_expected.to contain_service('autofs').with_ensure('stopped') }
-    end
-
-    context 'with service_enable set to valid value <false>' do
-      let(:params) { { service_enable: false } }
-
-      it { is_expected.to contain_service('autofs').with_enable('false') }
-    end
-  end
-
-  context 'with maps on RedHat (for auto.master file) set to valid value' do
-    context '<test => {}>' do
+    context 'with maps (for auto.master file) set to valid value <test => {}>' do
       let(:params) { { maps: { 'test' => {} } } }
 
       it do
@@ -349,7 +342,7 @@ describe 'autofs' do
       it { is_expected.to contain_file('autofs__map_mountmap_test') }
     end
 
-    context '<test => { mountpoint => mountpoint }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint' } } } }
 
       it do
@@ -368,7 +361,7 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
 
-    context '<test => { mappath => /etc/auto.testing }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mappath => /etc/auto.testing }>' do
       let(:params) { { maps: { 'test' => { 'mappath' => '/etc/auto.testing' } } } }
 
       it do
@@ -387,7 +380,7 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
 
-    context '<test => { mountpoint => mountpoint, maptype => nis }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint, maptype => nis }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis' } } } }
 
       it do
@@ -407,7 +400,7 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
 
-    context '<test => { mountpoint => mountpoint, maptype => nis, mapname => auto.testing }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint, maptype => nis, mapname => auto.testing }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis', 'mapname' => 'auto.testing' } } } }
 
       it do
@@ -431,7 +424,7 @@ describe 'autofs' do
       it { is_expected.to contain_file('autofs__map_auto.testing') }
     end
 
-    context '<test => { mountpoint => mountpoint, maptype => nis, manage => false }> maptype overrides manage' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint, maptype => nis, manage => false }> maptype overrides manage' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis', 'manage' => false } } } }
 
       it do
@@ -451,7 +444,7 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
 
-    context '<test => { mountpoint => mountpoint, manage => false }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint, manage => false }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'manage' => false } } } }
 
       it do
@@ -465,7 +458,7 @@ describe 'autofs' do
     end
 
     # same test as above with options set
-    context '<test => { options => ro }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { options => ro }>' do
       let(:params) { { maps: { 'test' => { 'options' => 'ro' } } } }
 
       it do
@@ -487,7 +480,7 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_test') }
     end
 
-    context '<test => { mountpoint => mountpoint, options => ro }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint, options => ro }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'options' => 'ro' } } } }
 
       it do
@@ -507,7 +500,7 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
 
-    context '<test => { mountpoint => mountpoint, maptype => nis, options => ro }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint, maptype => nis, options => ro }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'maptype' => 'nis', 'options' => 'ro' } } } }
 
       it do
@@ -528,7 +521,7 @@ describe 'autofs' do
       it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
     end
 
-    context '<test => { mountpoint => mountpoint, manage => false, options => ro }>' do
+    context 'with maps (for auto.master file) set to valid value <test => { mountpoint => mountpoint, manage => false, options => ro }>' do
       let(:params) { { maps: { 'test' => { 'mountpoint' => 'mountpoint', 'manage' => false, 'options' => 'ro' } } } }
 
       it do
@@ -542,7 +535,7 @@ describe 'autofs' do
       end
     end
 
-    context 'which manage seven mounts' do
+    context 'with maps (for auto.master file) set to valid value which manage seven mounts' do
       let(:params) do
         {
           maps: {
@@ -659,96 +652,109 @@ describe 'autofs' do
   end
 
   describe 'variable type and content validations' do
-    # set needed custom facts and variables
-    let(:facts) do
-      {
-        group: 'data_from_hiera_group',
-      }
-    end
-
-    validations = {
-      'Boolean' => {
-        name:    ['maps_hiera_merge', 'use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
-        valid:   [true, false],
-        invalid: ['false', 'string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
-        message: 'expects a Boolean',
-      },
-      'Enum[YES, NO]' => {
-        name:    ['browse_mode'],
-        valid:   ['YES', 'NO'],
-        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'expects a match for Enum',
-      },
-      'Enum[none, verbose, debug]' => {
-        name:    ['logging'],
-        valid:   ['none', 'verbose', 'debug'],
-        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'expects a match for Enum',
-      },
-      'Enum[yes, no]' => {
-        name:    ['append_options'],
-        valid:   ['yes', 'no'],
-        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'expects a match for Enum',
-      },
-      'Hash' => {
-        name:    ['maps'],
-        valid:   [], # Valid hashes are too complex to test them easily here. They should have their own tests anyway.
-        invalid: ['string', ['array'], 3, 2.42, false],
-        message: 'expects a Hash value',
-      },
-      'Integer' => {
-        name:    ['timeout', 'negative_timeout', 'mount_wait', 'umount_wait', 'mount_nfs_default_protocol'],
-        valid:   [3],
-        invalid: ['3', 'string', ['array'], { 'ha' => 'sh' }, 2.42, false],
-        message: 'expects an Integer',
-      },
-      'Stdlib::Absolutepath' => {
-        name:    ['autofs_sysconfig', 'autofs_auto_master'],
-        valid:   ['/absolute/filepath', '/absolute/directory/'],
-        invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
-        message: 'expects a Stdlib::Absolutepath',
-      },
-      'Stdlib::Ensure::Service' => {
-        name:    ['service_ensure'],
-        valid:   ['stopped', 'running'],
-        invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: 'Enum\[\'running\', \'stopped\'\]',
-      },
-      'String[1]' => {
-        name:    ['autofs_package', 'autofs_service', 'nis_master_name'],
-        valid:   ['string'],
-        invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
-        message: '(expects a String value|value of type Undef or String)',
-      },
+    # The following tests are OS independent, so we only test one supported OS
+    redhat = {
+      supported_os: [
+        {
+          'operatingsystem'        => 'RedHat',
+          'operatingsystemrelease' => ['7'],
+        },
+      ],
     }
 
-    validations.sort.each do |type, var|
-      mandatory_params = {} if mandatory_params.nil?
-      var[:name].each do |var_name|
-        var[:params] = {} if var[:params].nil?
-        var[:valid] = {} if var[:valid].nil?
-        var[:invalid] = {} if var[:invalid].nil?
+    on_supported_os(redhat).each do |_os, os_facts|
+      let(:facts) do
+        os_facts.merge(
+          {
+            group: 'data_from_hiera_group',
+          },
+        )
+      end
 
-        var[:valid].each do |valid|
-          context "when #{var_name} (#{type}) is set to valid #{valid} (as #{valid.class})" do
-            let(:facts) { [mandatory_facts, var[:facts]].reduce(:merge) } unless var[:facts].nil?
-            let(:params) { [mandatory_params, var[:params], { "#{var_name}": valid }].reduce(:merge) }
+      validations = {
+        'Boolean' => {
+          name:    ['maps_hiera_merge', 'use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
+          valid:   [true, false],
+          invalid: ['false', 'string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
+          message: 'expects a Boolean',
+        },
+        'Enum[YES, NO]' => {
+          name:    ['browse_mode'],
+          valid:   ['YES', 'NO'],
+          invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+          message: 'expects a match for Enum',
+        },
+        'Enum[none, verbose, debug]' => {
+          name:    ['logging'],
+          valid:   ['none', 'verbose', 'debug'],
+          invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+          message: 'expects a match for Enum',
+        },
+        'Enum[yes, no]' => {
+          name:    ['append_options'],
+          valid:   ['yes', 'no'],
+          invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+          message: 'expects a match for Enum',
+        },
+        'Hash' => {
+          name:    ['maps'],
+          valid:   [], # Valid hashes are too complex to test them easily here. They should have their own tests anyway.
+          invalid: ['string', ['array'], 3, 2.42, false],
+          message: 'expects a Hash value',
+        },
+        'Integer' => {
+          name:    ['timeout', 'negative_timeout', 'mount_wait', 'umount_wait', 'mount_nfs_default_protocol'],
+          valid:   [3],
+          invalid: ['3', 'string', ['array'], { 'ha' => 'sh' }, 2.42, false],
+          message: 'expects an Integer',
+        },
+        'Stdlib::Absolutepath' => {
+          name:    ['autofs_sysconfig', 'autofs_auto_master'],
+          valid:   ['/absolute/filepath', '/absolute/directory/'],
+          invalid: ['../invalid', 3, 2.42, ['array'], { 'ha' => 'sh' }, false],
+          message: 'expects a Stdlib::Absolutepath',
+        },
+        'Stdlib::Ensure::Service' => {
+          name:    ['service_ensure'],
+          valid:   ['stopped', 'running'],
+          invalid: ['string', ['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+          message: 'Enum\[\'running\', \'stopped\'\]',
+        },
+        'String[1]' => {
+          name:    ['autofs_package', 'autofs_service', 'nis_master_name'],
+          valid:   ['string'],
+          invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
+          message: '(expects a String value|value of type Undef or String)',
+        },
+      }
 
-            it { is_expected.to compile }
-          end
-        end
+      validations.sort.each do |type, var|
+        mandatory_params = {} if mandatory_params.nil?
+        var[:name].each do |var_name|
+          var[:params] = {} if var[:params].nil?
+          var[:valid] = {} if var[:valid].nil?
+          var[:invalid] = {} if var[:invalid].nil?
 
-        var[:invalid].each do |invalid|
-          context "when #{var_name} (#{type}) is set to invalid #{invalid} (as #{invalid.class})" do
-            let(:params) { [mandatory_params, var[:params], { "#{var_name}": invalid }].reduce(:merge) }
+          var[:valid].each do |valid|
+            context "when #{var_name} (#{type}) is set to valid #{valid} (as #{valid.class})" do
+              let(:facts) { [mandatory_facts, var[:facts]].reduce(:merge) } unless var[:facts].nil?
+              let(:params) { [mandatory_params, var[:params], { "#{var_name}": valid }].reduce(:merge) }
 
-            it 'fails' do
-              expect { is_expected.to contain_class(:subject) }.to raise_error(Puppet::Error, %r{#{var[:message]}})
+              it { is_expected.to compile }
             end
           end
-        end
-      end # var[:name].each
-    end # validations.sort.each
-  end # describe 'variable type and content validations'
+
+          var[:invalid].each do |invalid|
+            context "when #{var_name} (#{type}) is set to invalid #{invalid} (as #{invalid.class})" do
+              let(:params) { [mandatory_params, var[:params], { "#{var_name}": invalid }].reduce(:merge) }
+
+              it 'fails' do
+                expect { is_expected.to contain_class(:subject) }.to raise_error(Puppet::Error, %r{#{var[:message]}})
+              end
+            end
+          end
+        end # var[:name].each
+      end # validations.sort.each
+    end # describe 'variable type and content validations'
+  end
 end
