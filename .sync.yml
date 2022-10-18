@@ -19,5 +19,5 @@ spec/spec_helper.rb:
   coverage_report: true
   # last missing resource is triggered by 'variable type and content validations' and can't be covered
   minimum_code_coverage_percentage: 100
-  hiera_config: 'spec/fixtures/hiera-testing/hiera.yaml'
+  hiera_config: 'spec/fixtures/hiera/hiera.yaml'
   mock_with: ':rspec'
