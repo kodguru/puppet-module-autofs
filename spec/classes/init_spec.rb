@@ -164,9 +164,10 @@ describe 'autofs' do
         it { is_expected.to have_autofs__map_resource_count(1) }
         it do
           is_expected.to contain_autofs__map('home').only_with(
-            'mountpoint' => 'home',
-            'mounts'     => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'],
-            'manage'     => true,
+            'mountpoint'     => 'home',
+            'mounts'         => ['spec nfsserver:/path/to/spec', 'test nfsserver:/path/to/test'],
+            'manage'         => true,
+            'manage_content' => true,
           )
         end
 
@@ -241,9 +242,10 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'   => 'test',
-          'mounts' => [],
-          'manage' => true,
+          'name'           => 'test',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -262,10 +264,11 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'mounts'     => [],
-          'manage'     => true,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -281,10 +284,11 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'    => 'test',
-          'mappath' => '/etc/auto.testing',
-          'mounts'  => [],
-          'manage'  => true,
+          'name'           => 'test',
+          'mappath'        => '/etc/auto.testing',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -300,11 +304,12 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'maptype'    => 'nis',
-          'mounts'     => [],
-          'manage'     => true,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'maptype'        => 'nis',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -320,12 +325,13 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'maptype'    => 'nis',
-          'mapname'    => 'auto.testing',
-          'mounts'     => [],
-          'manage'     => true,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'maptype'        => 'nis',
+          'mapname'        => 'auto.testing',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -344,11 +350,12 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'maptype'    => 'nis',
-          'mounts'     => [],
-          'manage'     => false,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'maptype'        => 'nis',
+          'mounts'         => [],
+          'manage'         => false,
+          'manage_content' => true,
         )
       end
 
@@ -364,10 +371,11 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'mounts'     => [],
-          'manage'     => false,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'mounts'         => [],
+          'manage'         => false,
+          'manage_content' => true,
         )
       end
     end
@@ -378,10 +386,11 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'    => 'test',
-          'options' => 'ro',
-          'mounts'  => [],
-          'manage'  => true,
+          'name'           => 'test',
+          'options'        => 'ro',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -400,11 +409,12 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'options'    => 'ro',
-          'mounts'     => [],
-          'manage'     => true,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'options'        => 'ro',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -420,12 +430,13 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'maptype'    => 'nis',
-          'options'    => 'ro',
-          'mounts'     => [],
-          'manage'     => true,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'maptype'        => 'nis',
+          'options'        => 'ro',
+          'mounts'         => [],
+          'manage'         => true,
+          'manage_content' => true,
         )
       end
 
@@ -441,11 +452,12 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test').only_with(
-          'name'       => 'test',
-          'mountpoint' => 'mountpoint',
-          'options'    => 'ro',
-          'mounts'     => [],
-          'manage'     => false,
+          'name'           => 'test',
+          'mountpoint'     => 'mountpoint',
+          'options'        => 'ro',
+          'mounts'         => [],
+          'manage'         => false,
+          'manage_content' => true,
         )
       end
     end
@@ -467,68 +479,75 @@ describe 'autofs' do
 
       it do
         is_expected.to contain_autofs__map('test1').only_with(
-          'manage'     => true,
-          'mounts'     => [],
-          'name'       => 'test1',
+          'manage'         => true,
+          'manage_content' => true,
+          'mounts'         => [],
+          'name'           => 'test1',
         )
       end
 
       it do
         is_expected.to contain_autofs__map('test2').only_with(
-          'manage'     => true,
-          'mountpoint' => 'mountpoint2',
-          'mounts'     => [],
-          'name'       => 'test2',
+          'manage'         => true,
+          'manage_content' => true,
+          'mountpoint'     => 'mountpoint2',
+          'mounts'         => [],
+          'name'           => 'test2',
         )
       end
 
       it do
         is_expected.to contain_autofs__map('test3').only_with(
-          'manage'     => true,
-          'mountpoint' => 'mountpoint3',
-          'mounts'     => [],
-          'name'       => 'test3',
-          'options'    => 'ro',
+          'manage'         => true,
+          'manage_content' => true,
+          'mountpoint'     => 'mountpoint3',
+          'mounts'         => [],
+          'name'           => 'test3',
+          'options'        => 'ro',
         )
       end
 
       it do
         is_expected.to contain_autofs__map('test4').only_with(
-          'name'       => 'test4',
-          'manage'     => true,
-          'mountpoint' => 'mountpoint4',
-          'maptype'    => 'nis',
-          'mounts'     => [],
+          'name'           => 'test4',
+          'manage'         => true,
+          'manage_content' => true,
+          'mountpoint'     => 'mountpoint4',
+          'maptype'        => 'nis',
+          'mounts'         => [],
         )
       end
 
       it do
         is_expected.to contain_autofs__map('test5').only_with(
-          'name'       => 'test5',
-          'manage'     => false,
-          'mountpoint' => 'mountpoint5',
-          'mounts'     => [],
+          'name'           => 'test5',
+          'manage'         => false,
+          'manage_content' => true,
+          'mountpoint'     => 'mountpoint5',
+          'mounts'         => [],
         )
       end
 
       it do
         is_expected.to contain_autofs__map('test6').only_with(
-          'name'       => 'test6',
-          'manage'     => true,
-          'mountpoint' => 'mountpoint6',
-          'mappath'    => '/etc/auto.testing',
-          'mounts'     => [],
+          'name'           => 'test6',
+          'manage'         => true,
+          'manage_content' => true,
+          'mountpoint'     => 'mountpoint6',
+          'mappath'        => '/etc/auto.testing',
+          'mounts'         => [],
         )
       end
 
       it do
         is_expected.to contain_autofs__map('test7').only_with(
-          'name'       => 'test7',
-          'manage'     => true,
-          'mountpoint' => 'mountpoint7',
-          'maptype'    => 'nis',
-          'mapname'    => 'auto.test',
-          'mounts'     => [],
+          'name'           => 'test7',
+          'manage'         => true,
+          'manage_content' => true,
+          'mountpoint'     => 'mountpoint7',
+          'maptype'        => 'nis',
+          'mapname'        => 'auto.test',
+          'mounts'         => [],
         )
       end
 

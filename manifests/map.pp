@@ -50,6 +50,9 @@
 # @param manage
 #   Boolean to manage mounts in `auto.master`. Setting it to false will result in `-null` in `auto.master`.
 #
+# @param manage_content
+#   Boolean to manage contents of map.
+#
 # @param file
 #   Specify the mounts to be mounted at mountpoint from a file.
 #
@@ -67,6 +70,7 @@ define autofs::map (
   Optional[String[1]] $mountpoint         = undef,
   Optional[String[1]] $maptype            = undef,
   Variant[String[1], Boolean] $manage     = true,
+  Boolean $manage_content                 = true,
   Optional[String[1]] $options            = undef,
 ) {
   $mnt = $name
@@ -76,9 +80,10 @@ define autofs::map (
   $mappath_real = pick($mappath, "/etc/auto.${name}")
 
   # functionality
-  $content = $file ? {
-    undef   => template('autofs/mountmap.erb'),
-    default => undef,
+  if $manage_content == true and $file == undef {
+    $content = template('autofs/mountmap.erb')
+  } else {
+    $content = undef
   }
 
   file { "autofs__map_${mapname_real}":

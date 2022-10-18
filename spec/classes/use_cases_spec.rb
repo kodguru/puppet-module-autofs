@@ -45,10 +45,11 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('home').only_with(
-            'manage'     => true,
-            'mountpoint' => 'home',
-            'mounts'     => ['server:/home/a', 'server:/home/b', 'server:/home/c'],
-            'name'       => 'home',
+            'manage'         => true,
+            'manage_content' => true,
+            'mountpoint'     => 'home',
+            'mounts'         => ['server:/home/a', 'server:/home/b', 'server:/home/c'],
+            'name'           => 'home',
           )
         end
 
@@ -91,11 +92,12 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('auto.home').only_with(
-            'manage'     => true,
-            'maptype'    => 'yp',
-            'mountpoint' => 'home',
-            'mounts'     => [],
-            'name'       => 'auto.home',
+            'manage'         => true,
+            'manage_content' => true,
+            'maptype'        => 'yp',
+            'mountpoint'     => 'home',
+            'mounts'         => [],
+            'name'           => 'auto.home',
           )
         end
 
@@ -129,11 +131,12 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('auto.home').only_with(
-            'manage'     => true,
-            'maptype'    => 'yp',
-            'mountpoint' => 'home',
-            'mounts'     => [],
-            'name'       => 'auto.home',
+            'manage'         => true,
+            'manage_content' => true,
+            'maptype'        => 'yp',
+            'mountpoint'     => 'home',
+            'mounts'         => [],
+            'name'           => 'auto.home',
           )
         end
 
@@ -167,11 +170,12 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('auto.home').only_with(
-            'manage'     => true,
-            'maptype'    => 'yp',
-            'mountpoint' => 'home',
-            'mounts'     => [],
-            'name'       => 'auto.home',
+            'manage'         => true,
+            'manage_content' => true,
+            'maptype'        => 'yp',
+            'mountpoint'     => 'home',
+            'mounts'         => [],
+            'name'           => 'auto.home',
           )
         end
 
@@ -208,20 +212,22 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('data').only_with(
-            'manage'     => true,
-            'mountpoint' => 'data',
-            'mounts'     => ['server:/data/a', 'server:/data/b', 'server:/data/c'],
-            'name'       => 'data',
-            'options'    => '--vers=3',
+            'manage'         => true,
+            'manage_content' => true,
+            'mountpoint'     => 'data',
+            'mounts'         => ['server:/data/a', 'server:/data/b', 'server:/data/c'],
+            'name'           => 'data',
+            'options'        => '--vers=3',
           )
         end
 
         it do
           is_expected.to contain_autofs__map('home').only_with(
-            'manage'     => true,
-            'mountpoint' => 'home',
-            'mounts'     => ['server:/home/a', 'server:/home/b', 'server:/home/c'],
-            'name'       => 'home',
+            'manage'         => true,
+            'manage_content' => true,
+            'mountpoint'     => 'home',
+            'mounts'         => ['server:/home/a', 'server:/home/b', 'server:/home/c'],
+            'name'           => 'home',
           )
         end
 
@@ -269,10 +275,11 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('ftp').only_with(
-            'manage'     => true,
-            'mountpoint' => 'ftp/projects',
-            'mounts'     => ['server:/ftp/a', 'server:/ftp/b', 'server:/ftp/c'],
-            'name'       => 'ftp',
+            'manage'         => true,
+            'manage_content' => true,
+            'mountpoint'     => 'ftp/projects',
+            'mounts'         => ['server:/ftp/a', 'server:/ftp/b', 'server:/ftp/c'],
+            'name'           => 'ftp',
           )
         end
 
@@ -310,9 +317,10 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('ftp').only_with(
-            'manage'     => true,
-            'mounts'     => ['server:/ftp/a', 'server:/ftp/b', 'server:/ftp/c'],
-            'name'       => 'ftp',
+            'manage'         => true,
+            'manage_content' => true,
+            'mounts'         => ['server:/ftp/a', 'server:/ftp/b', 'server:/ftp/c'],
+            'name'           => 'ftp',
           )
         end
 
@@ -351,10 +359,11 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('home').only_with(
-            'manage'     => false,
-            'mountpoint' => 'home',
-            'mounts'     => [],
-            'name'       => 'home',
+            'manage'         => false,
+            'manage_content' => true,
+            'mountpoint'     => 'home',
+            'mounts'         => [],
+            'name'           => 'home',
           )
         end
 
@@ -370,6 +379,22 @@ describe 'autofs' do
         it { is_expected.to contain_file('autofs__map_mountmap_home').with_path('/etc/auto.home') }
         it { is_expected.to contain_concat__fragment('auto.master_home').with_content("/home -null\n") }
         it { is_expected.to contain_concat__fragment('auto.master_linebreak').with_content("\n") }
+
+        context 'with manage_content false' do
+          let(:params) do
+            {
+              maps: {
+                'home' => {
+                  'mountpoint'     => 'home',
+                  'manage'         => true,
+                  'manage_content' => false,
+                },
+              },
+            }
+          end
+
+          it { is_expected.to contain_file('autofs__map_mountmap_home').with_content(nil) }
+        end
       end
 
       context 'should not load NIS maps' do
@@ -387,10 +412,11 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('home').only_with(
-            'manage'     => true,
-            'mountpoint' => 'home',
-            'mounts'     => [],
-            'name'       => 'home',
+            'manage'         => true,
+            'manage_content' => true,
+            'mountpoint'     => 'home',
+            'mounts'         => [],
+            'name'           => 'home',
           )
         end
 
@@ -426,11 +452,12 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('auto.proj').only_with(
-            'manage'     => true,
-            'maptype'    => 'yp',
-            'mountpoint' => 'proj',
-            'mounts'     => [],
-            'name'       => 'auto.proj',
+            'manage'         => true,
+            'manage_content' => true,
+            'maptype'        => 'yp',
+            'mountpoint'     => 'proj',
+            'mounts'         => [],
+            'name'           => 'auto.proj',
           )
         end
 
@@ -466,11 +493,12 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('auto.proj').only_with(
-            'file'       => '/path/to/file/with/mounts',
-            'manage'     => true,
-            'mountpoint' => 'proj',
-            'mounts'     => [],
-            'name'       => 'auto.proj',
+            'file'           => '/path/to/file/with/mounts',
+            'manage'         => true,
+            'manage_content' => true,
+            'mountpoint'     => 'proj',
+            'mounts'         => [],
+            'name'           => 'auto.proj',
           )
         end
 
@@ -511,12 +539,13 @@ describe 'autofs' do
         # class autofs
         it do
           is_expected.to contain_autofs__map('auto.proj').only_with(
-            'file'       => '/path/to/file/with/mounts',
-            'manage'     => true,
-            'mappath'    => '/etc/auto.proj',
-            'mountpoint' => 'proj',
-            'mounts'     => [],
-            'name'       => 'auto.proj',
+            'file'           => '/path/to/file/with/mounts',
+            'manage'         => true,
+            'manage_content' => true,
+            'mappath'        => '/etc/auto.proj',
+            'mountpoint'     => 'proj',
+            'mounts'         => [],
+            'name'           => 'auto.proj',
           )
         end
 

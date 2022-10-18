@@ -88,6 +88,14 @@ describe 'autofs::map' do
           is_expected.to contain_file('autofs__map_string')
         }
       end
+
+      context 'with manage_content set to false' do
+        let(:params) { { manage_content: false } }
+
+        it do
+          is_expected.to contain_file('autofs__map_mountmap_example').with('content' => nil)
+        end
+      end
     end
 
     describe "on #{os} with non-functional parameters set" do
