@@ -181,91 +181,6 @@ describe 'autofs' do
         it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
       end
 
-      describe 'with maps_hiera_merge' do
-        let(:facts) do
-          {
-            fqdn:     'data.from.hiera.fqdn',
-            group:    'data_from_hiera_group',
-          }
-        end
-
-        context 'set to valid value <false>' do
-          let(:params) { { maps_hiera_merge: false } }
-
-          it { is_expected.to have_autofs__map_resource_count(2) }
-          it do
-            is_expected.to contain_autofs__map('group').only_with(
-              'mountpoint' => 'from_hiera_fqdn',
-              'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
-              'manage'     => true,
-            )
-          end
-
-          it do
-            is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
-              'mountpoint' => 'home',
-              'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
-              'manage'     => true,
-            )
-          end
-
-          it { is_expected.to contain_concat('auto.master') }
-          it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
-          it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
-          it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
-
-          # from autofs::map, here to reach high resource coverage
-          it { is_expected.to contain_file('autofs__map_mountmap_group') }
-          it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_fqdn') }
-          it { is_expected.to contain_concat__fragment('auto.master_group') }
-          it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_fqdn') }
-          it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
-        end
-
-        context 'set to valid value <true>' do
-          let(:params) { { maps_hiera_merge: true } }
-
-          it { is_expected.to have_autofs__map_resource_count(3) }
-          it do
-            is_expected.to contain_autofs__map('group').only_with(
-              'mountpoint' => 'from_hiera_fqdn',
-              'mounts'     => ['group nfsserver:/group/from/hiera/fqdn'],
-              'manage'     => true,
-            )
-          end
-
-          it do
-            is_expected.to contain_autofs__map('home_from_hiera_fqdn').only_with(
-              'mountpoint' => 'home',
-              'mounts'     => ['home1 nfsserver:/home/from/hiera/fqdn/1', 'home2 nfsserver:/home/from/hiera/fqdn/2'],
-              'manage'     => true,
-            )
-          end
-
-          it do
-            is_expected.to contain_autofs__map('home_from_hiera_group').only_with(
-              'mountpoint' => 'home',
-              'mounts'     => ['home nfsserver:/home/from/hiera/group'],
-              'manage'     => true,
-            )
-          end
-
-          it { is_expected.to contain_concat('auto.master') }
-          it { is_expected.to contain_concat__fragment('auto.master_head').with_content(head) }
-          it { is_expected.to contain_concat__fragment('auto.master_net').with_content(net) }
-          it { is_expected.to contain_concat__fragment('auto.master_nis_master').with_content(nis_master) }
-
-          # from autofs::map, here to reach high resource coverage
-          it { is_expected.to contain_file('autofs__map_mountmap_group') }
-          it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_fqdn') }
-          it { is_expected.to contain_file('autofs__map_mountmap_home_from_hiera_group') }
-          it { is_expected.to contain_concat__fragment('auto.master_group') }
-          it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_fqdn') }
-          it { is_expected.to contain_concat__fragment('auto.master_home_from_hiera_group') }
-          it { is_expected.to contain_concat__fragment('auto.master_linebreak') }
-        end
-      end
-
       context 'with autofs_package set to valid value <bikefs>' do
         let(:params) { { autofs_package: 'bikefs' } }
 
@@ -673,7 +588,7 @@ describe 'autofs' do
 
       validations = {
         'Boolean' => {
-          name:    ['maps_hiera_merge', 'use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
+          name:    ['use_nis_maps', 'use_dash_hosts_for_net', 'service_enable'],
           valid:   [true, false],
           invalid: ['false', 'string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
           message: 'expects a Boolean',

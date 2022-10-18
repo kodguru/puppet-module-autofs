@@ -2,5 +2,3 @@
 ---
 os:
   family: 'RedHat'
-group: 'no_data_from_hiera'
-fqdn: 'no_data_from_hiera'

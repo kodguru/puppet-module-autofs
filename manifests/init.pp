@@ -27,9 +27,6 @@
 # @param maps
 #   Specify the maps managed. This value is sent to define `autofs::map`.
 #
-# @param maps_hiera_merge
-#   If the module should merge `$maps` from different levels in hiera.
-#
 # @param autofs_package
 #   Package name for autofs. Unset, this parameter will choose the appropriate default for the system.
 #
@@ -67,7 +64,6 @@ class autofs (
   Enum['yes', 'no'] $append_options         = 'yes',
   Enum['none', 'verbose', 'debug'] $logging = 'none',
   Hash $maps                                = {},
-  Boolean $maps_hiera_merge                 = false,
   String[1] $autofs_package                 = 'autofs',
   Stdlib::Absolutepath $autofs_sysconfig    = '/etc/sysconfig/autofs',
   String[1] $autofs_service                 = 'autofs',
@@ -78,12 +74,6 @@ class autofs (
   Stdlib::Ensure::Service $service_ensure   = 'running',
   Boolean $service_enable                   = true,
 ) {
-  # variable preparations
-  case $maps_hiera_merge {
-    true:    { $maps_real = hiera_hash('autofs::maps', {}) }
-    default: { $maps_real = $maps }
-  }
-
   # functionality
   case $facts['os']['family'] {
     'RedHat', 'Suse', 'Debian': {}
@@ -105,7 +95,7 @@ class autofs (
     require => Package['autofs'],
   }
 
-  create_resources('autofs::map', $maps_real)
+  create_resources('autofs::map', $maps)
 
   service { 'autofs':
     ensure    => $service_ensure,
