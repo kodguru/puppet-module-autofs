@@ -1,0 +1,2 @@
+---
+autofs::autofs_sysconfig: '/etc/default/autofs'

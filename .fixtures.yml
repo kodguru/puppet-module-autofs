@@ -2,9 +2,9 @@ fixtures:
   repositories:
     'concat':
       repo: 'https://github.com/puppetlabs/puppetlabs-concat.git'
-      ref: '2.2.1'
+      ref: 'v7.2.0'
     'stdlib':
       repo: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
-      ref:  '5.2.0'
+      ref: 'v8.2.0'
   symlinks:
     "autofs": "#{source_dir}"
