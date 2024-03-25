@@ -436,7 +436,7 @@ describe 'autofs' do
     end
 
     describe 'issues' do
-      # https://github.com/kodguru/puppet-module-autofs/issues/25
+      # https://github.com/ericsson/puppet-module-autofs/issues/25
       context 'issue #25 described expected behavior, ' do
         let(:params) do
           {
